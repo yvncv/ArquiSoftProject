@@ -47,6 +47,7 @@ const BarraNavegacion = ({ loggedInUser }) => {
             {loggedInUser ? (
               <>
                 <Nav.Link href="/dashboard">Dashboard</Nav.Link>
+                <Nav.Link href="/profile">Perfil</Nav.Link>
                 <Nav.Link onClick={handleLogout} href='/'>Cerrar Sesión</Nav.Link>
               </>
             ) : (

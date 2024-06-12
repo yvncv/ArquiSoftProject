@@ -10,6 +10,7 @@ const Register = () => {
     carrera: "",
     ciclo: "",
     codigo: "",
+    correo: "",
     password: "",
     role: "alumno",
   });
@@ -18,7 +19,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { nombre, carrera, ciclo, codigo, password } = formData;
+  const { nombre, carrera, ciclo, codigo, correo, password } = formData;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -45,6 +46,7 @@ const Register = () => {
         carrera: "",
         ciclo: "",
         codigo: "",
+        correo: "",
         password: "",
         role: "alumno",
       });
@@ -109,6 +111,17 @@ const Register = () => {
           </Col>
 
           <Col className="mx-1">
+            <Form.Group as={Col} controlId="formCodigo">
+              <Form.Label>Correo electrónico</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Ingrese su código"
+                name="correo"
+                value={correo}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
             <Form.Group as={Col} controlId="formCodigo">
               <Form.Label>Código</Form.Label>
               <Form.Control
