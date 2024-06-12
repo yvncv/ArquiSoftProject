@@ -1,25 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { AuthProvider } from './context/AuthContext';
+import { jwtDecode } from 'jwt-decode';
+import { DecodedToken } from './types/DecodedToken';
+import { useState } from 'react';
+import Dashboard from './pages/Dashboard';
+import BarraNavegacion from './components/BarraNavegacion';
 
 function App() {
+  const [loggedInUser, setLoggedInUser] = useState<DecodedToken['usuario'] | null>(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded: DecodedToken = jwtDecode(token);
+        return decoded.usuario;
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+        return null;
+      }
+    }
+    return null;
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <Router>
+        <>
+        <BarraNavegacion loggedInUser={loggedInUser} />
+          <div className='container'>
+            <Routes>
+              <Route path="/" element={<Login setLoggedInUser={setLoggedInUser} />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/dashboard" element={ loggedInUser ? <Dashboard /> : <Navigate to="/login" />} />
+            </Routes>
+          </div>
+        </>
+      </Router>
+    </AuthProvider>
   );
 }
 
