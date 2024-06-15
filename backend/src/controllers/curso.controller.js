@@ -1,4 +1,4 @@
-
+const cursoCtrl = {};
 cursoCtrl.getCursos = async (req, res) => {
     try {
         const cursos = await Curso.find();
@@ -9,29 +9,17 @@ cursoCtrl.getCursos = async (req, res) => {
 };
 
 cursoCtrl.createCursos = async (req, res) => {
-    const { nombre, codigo, grado, carrera, facultad, seestre, sesiones, participantes } = req.body;
-
+    // const { nombre, codigo, grado, carrera, facultad, seestre, sesiones, participantes } = req.body;
+    const { nombre, codigo, grado, carrera, facultad, seestre } = req.body;
     try {
         let curso = await Curso.findOne({ codigo });
         if (curso) {
             return res.status(400).json({ msg: 'El curso ya existe' });
         }
-
-        curso = new Curso({ nombre, codigo, grado, carrera, facultad, seestre, sesiones, participantes });
-        
-        const payload = {
-            curso: {
-                id: curso.id,
-                nombre: curso.nombre,
-                codigo: curso.codigo,
-                grado: curso.grado,
-                carrera: curso.carrera,
-                facultad: curso.facultad,
-                seestre: curso.seestre,
-                sesiones: curso.sesiones,
-                participantes: curso.participantes,
-            }
-        };
+        await curso.save();
+        res.json({ message: "El usuario ha sido registrado" });
+        // curso = new Curso({ nombre, codigo, grado, carrera, facultad, seestre, sesiones, participantes });
+        curso = new Curso({ nombre, codigo, grado, carrera, facultad, seestre });
     } catch (err) {
         res.status(500).json({ message: 'Error al registrar el curso', err });
     }
@@ -80,3 +68,6 @@ cursoCtrl.updateCurso = async (req, res) => {
         res.status(500).json({ message: 'Error al actualizar el curso', error });
     }
 };
+
+// Exportar el objeto con todas las funciones
+module.exports = cursoCtrl;

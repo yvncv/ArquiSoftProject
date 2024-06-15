@@ -8,8 +8,8 @@ const usuarioSchema = new Schema({
     carrera: { type: String, required: true },
     facultad: { type: String, required: true },
     semestre: { type: String, required: true },
-    sesiones: [{ type: String, required: true }],
-    participantes: [{ type: String, required: true }],
+    // sesiones: [{ type: String, required: true }],
+    // participantes: [{ type: String, required: true }],
     // nombre, codigo, grado, carrera, facultad, seestre, sesiones, participantes
 }, {
     versionKey: false,
