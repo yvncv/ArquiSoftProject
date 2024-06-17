@@ -54,12 +54,13 @@ const Login = ({ setLoggedInUser }) => {
 
   return (
     <Container>
-      <h2>Iniciar Sesión</h2>
+      <div className='container-formulario-logo'>
+        <div className='logo'></div>
+      </div>
       {loading ? ( // Mostrar mensaje de carga si se está cargando
         <p>Cargando...</p>
       ) : (
-        <Form onSubmit={handleSubmit}>
-          <Row className="mb-3">
+        <Form onSubmit={handleSubmit} className="container-formulario">
             <Form.Group as={Col} md="6" controlId="formCodigo">
               <Form.Label>Código</Form.Label>
               <Form.Control
@@ -83,8 +84,7 @@ const Login = ({ setLoggedInUser }) => {
                 required
               />
             </Form.Group>
-          </Row>
-          <Button variant="primary" type="submit">
+          <Button variant="success" type="submit">
             Iniciar Sesión
           </Button>
           <p className="mt-3">¿No tienes una cuenta? <Link to="/register">Regístrate aquí</Link></p>

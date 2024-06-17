@@ -7,6 +7,7 @@ import { DecodedToken } from './types/DecodedToken';
 import { useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import BarraNavegacion from './components/BarraNavegacion';
+import Cursos from './pages/Cursos';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<DecodedToken['usuario'] | null>(() => {
@@ -33,6 +34,7 @@ function App() {
               <Route path="/" element={<Login setLoggedInUser={setLoggedInUser} />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={ loggedInUser ? <Dashboard /> : <Navigate to="/" />} />
+              <Route path='/cursos' element={<Cursos/>}/>
             </Routes>
           </div>
         </>
