@@ -36,7 +36,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={ loggedInUser ? <Dashboard /> : <Navigate to="/" />} />
               <Route path="/profile" element={ loggedInUser ? <Profile /> : <Navigate to="/" />} />
-              <Route path="/crear_curso" element={ loggedInUser?.role==="admin" ? <CrearCurso /> : <Navigate to="/" />} />
+              <Route path="/crear_curso" element={ loggedInUser?.role==="admin" ? <CrearCurso /> : <Navigate to="/dashboard" />} />
             </Routes>
           </div>
         </>
