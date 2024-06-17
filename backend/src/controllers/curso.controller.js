@@ -1,4 +1,5 @@
 const cursoCtrl = {};
+const Curso = require('../models/Curso');
 cursoCtrl.getCursos = async (req, res) => {
     try {
         const cursos = await Curso.find();
@@ -9,17 +10,15 @@ cursoCtrl.getCursos = async (req, res) => {
 };
 
 cursoCtrl.createCursos = async (req, res) => {
-    // const { nombre, codigo, grado, carrera, facultad, seestre, sesiones, participantes } = req.body;
-    const { nombre, codigo, grado, carrera, facultad, seestre } = req.body;
+    const { nombre, codigo, grado, carrera, facultad, semestre, sesiones, participantes } = req.body;
+    const newCurso = new Curso({ nombre, codigo, grado, carrera, facultad, semestre, sesiones, participantes });
     try {
         let curso = await Curso.findOne({ codigo });
         if (curso) {
             return res.status(400).json({ msg: 'El curso ya existe' });
         }
-        await curso.save();
-        res.json({ message: "El usuario ha sido registrado" });
-        // curso = new Curso({ nombre, codigo, grado, carrera, facultad, seestre, sesiones, participantes });
-        curso = new Curso({ nombre, codigo, grado, carrera, facultad, seestre });
+        await newCurso.save();
+        res.json({ message: "El curso ha sido registrado" });
     } catch (err) {
         res.status(500).json({ message: 'Error al registrar el curso', err });
     }
@@ -57,11 +56,11 @@ cursoCtrl.deleteCurso = async (req, res) => {
 };
 
 cursoCtrl.updateCurso = async (req, res) => {
-    const { nombre, codigo, grado, carrera, facultad, seestre, sesiones, participantes } = req.body;
+    const { nombre, codigo, grado, carrera, facultad, semestre, sesiones, participantes } = req.body;
     try {
         const id = req.params.id;
         await Curso.findByIdAndUpdate(id, {
-            nombre, codigo, grado, carrera, facultad, seestre, sesiones, participantes
+            nombre, codigo, grado, carrera, facultad, semestre, sesiones, participantes
         });
         res.json({ message: "El curso ha sido actualizado" });
     } catch (error) {
