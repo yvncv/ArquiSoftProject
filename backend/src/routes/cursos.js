@@ -8,7 +8,7 @@ router.route('/')
     .post(cursoCtrl.createCursos); // Verificar que cursoCtrl.createCursos no es undefined
 
 router.route('/:id')
-    .get(cursoCtrl.getCur) // Verificar que cursoCtrl.getUsu no es undefined
+    .get(cursoCtrl.getCursoById) // Verificar que cursoCtrl.getUsu no es undefined
     .delete(cursoCtrl.deleteCurso) // Verificar que cursoCtrl.deleteCurso no es undefined
     .put(cursoCtrl.updateCurso); // Verificar que cursoCtrl.updateCurso no es undefined
 

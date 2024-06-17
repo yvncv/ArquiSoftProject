@@ -1,3 +1,5 @@
+import { Usuario } from "./Usuario";
+
 export type Curso = {
     _id: string;
     nombre: string;
@@ -7,5 +9,5 @@ export type Curso = {
     facultad: string;
     semestre: string;
     sesiones: [string];
-    participantes: [string];    
+    participantes: [Usuario];    
 }                                                     

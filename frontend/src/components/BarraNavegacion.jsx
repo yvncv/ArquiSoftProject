@@ -46,6 +46,7 @@ const BarraNavegacion = ({ loggedInUser }) => {
           <Nav className="justify-content-end flex-grow-1">
             {loggedInUser ? (
               <>
+                <Nav.Link href="/crear_curso">Crear Curso</Nav.Link>
                 <Nav.Link href="/dashboard">Dashboard</Nav.Link>
                 <Nav.Link href="/profile">Perfil</Nav.Link>
                 <Nav.Link onClick={handleLogout} href='/'>Cerrar Sesión</Nav.Link>
