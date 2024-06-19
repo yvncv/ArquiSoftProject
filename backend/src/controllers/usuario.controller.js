@@ -17,7 +17,7 @@ usuarioCtrl.getUsuarios = async (req, res) => {
 };
 
 usuarioCtrl.createUsuarios = async (req, res) => {
-    const { nombre, carrera, ciclo, codigo, password, role } = req.body;
+    const { nombre, carrera, ciclo, codigo, correo, password, role } = req.body;
     if (!nombre || !codigo || !password) {
         return res.status(400).json({ msg: 'Por favor, proporciona todos los campos requeridos.' });
     }
@@ -28,7 +28,7 @@ usuarioCtrl.createUsuarios = async (req, res) => {
             return res.status(400).json({ msg: 'El usuario ya existe' });
         }
 
-        usuario = new Usuario({ nombre, carrera, ciclo, codigo, password, role });
+        usuario = new Usuario({ nombre, carrera, ciclo, codigo, correo, password, role });
 
         const salt = await bcrypt.genSalt(10);
         usuario.password = await bcrypt.hash(password, salt);
@@ -41,6 +41,7 @@ usuarioCtrl.createUsuarios = async (req, res) => {
                 id: usuario.id,
                 nombre: usuario.nombre,
                 codigo: usuario.codigo,
+                correo: usuario.correo,
                 carrera: usuario.carrera,
                 ciclo: usuario.ciclo,
                 role: usuario.role,
@@ -96,11 +97,11 @@ usuarioCtrl.updateUsuario = async (req, res) => {
         return res.status(401).json({ message: 'No estás autorizado para realizar esta acción' });
     }
     
-    const { nombre, carrera, ciclo, codigo, password, role } = req.body;
+    const { nombre, carrera, ciclo, codigo, correo, password, role } = req.body;
     try {
         const id = req.params.id;
         await Usuario.findByIdAndUpdate(id, {
-            nombre, carrera, ciclo, codigo, password, role
+            nombre, carrera, ciclo, codigo, correo, password, role
         });
         res.json({ message: "El usuario ha sido actualizado" });
     } catch (error) {
@@ -127,6 +128,7 @@ usuarioCtrl.iniciarSesion = async (req, res) => {
                 id: usuario.id,
                 nombre: usuario.nombre,
                 codigo: usuario.codigo,
+                correo: usuario.correo,
                 carrera: usuario.carrera,
                 ciclo: usuario.ciclo,
                 role: usuario.role,

@@ -8,6 +8,8 @@ import { useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import BarraNavegacion from './components/BarraNavegacion';
 import Cursos from './pages/Cursos';
+import Profile from './pages/Profile';
+import CrearCurso from './pages/CrearCurso';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<DecodedToken['usuario'] | null>(() => {
@@ -35,6 +37,8 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={ loggedInUser ? <Dashboard /> : <Navigate to="/" />} />
               <Route path='/cursos' element={<Cursos/>}/>
+              <Route path="/profile" element={ loggedInUser ? <Profile /> : <Navigate to="/" />} />
+              <Route path="/crear_curso" element={ loggedInUser?.role==="admin" ? <CrearCurso /> : <Navigate to="/dashboard" />} />
             </Routes>
           </div>
         </>

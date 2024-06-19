@@ -18,5 +18,8 @@ async function main(){
 //ruta para nuestra api de usuarios
 app.use('/api/usuarios', require('./routes/usuarios'));
 
+//ruta para nuestra api de cursos
+app.use('/api/cursos', require('./routes/cursos'));
+
 main(); 
 //ejecutamos la funcion asincrona de arriba 

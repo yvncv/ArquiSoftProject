@@ -1,9 +1,10 @@
-export interface Usuario {
+export type Usuario = {
     _id: string;
-    name: string;
+    nombre: string;
     carrera: string;
     ciclo: string;
     codigo: string;
-    contraseña: string;
+    correo: string;
+    password: string;
     role: string;
 }                                                     
