@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Col } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -26,12 +26,13 @@ const Login = ({ setLoggedInUser }) => {
   
     try {
       const res = await axios.post('http://localhost:8080/api/usuarios/login', { codigo, password });
+      
+      const {token} = res.data;
       localStorage.setItem('token', res.data.token);
       setLoggedInUser(codigo);
-      login();
+      login(codigo);
       
       // Hacer una solicitud GET para obtener los datos del usuario
-      const token = res.data.token;
       const userDataRes = await axios.get(`http://localhost:8080/api/usuarios/login/${token}`);
       console.log('Usuario logueado:', userDataRes.data);
       navigate('/dashboard'); // Redirige al usuario al dashboard

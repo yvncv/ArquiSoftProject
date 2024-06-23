@@ -4,36 +4,34 @@ import Register from './pages/Register';
 import { AuthProvider } from './context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import { DecodedToken } from './types/DecodedToken';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
-import BarraNavegacion from './components/BarraNavegacion';
 import Cursos from './pages/Cursos';
-import Layout from './components/Layout';
+import Layout from './components/Layout.jsx';
 import Profile from './pages/Profile';
 import CrearCurso from './pages/CrearCurso';
 
 function App() {
-  const [loggedInUser, setLoggedInUser] = useState<
-    DecodedToken["usuario"] | null
-  >(() => {
-    const token = localStorage.getItem("token");
+  const [loggedInUser, setLoggedInUser] = useState<DecodedToken['usuario'] | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
     if (token) {
       try {
         const decoded: DecodedToken = jwtDecode(token);
-        return decoded.usuario;
+        setLoggedInUser(decoded.usuario);
       } catch (error) {
-        console.error("Error al decodificar el token:", error);
-        return null;
+        console.error('Error al decodificar el token:', error);
+        setLoggedInUser(null);
       }
     }
-    return null;
-  });
+  }, []);
 
   return (
     <AuthProvider>
       <Router>
         <>
-          <Layout>
+          <Layout loggedInUser={loggedInUser}>
             <Routes>
               <Route
                 path="/"

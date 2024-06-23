@@ -1,17 +1,34 @@
-import React, { useContext, useState, useEffect } from "react";
-import { Card, Form, Button, Container, Row, Col } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Card, Row, Col } from "react-bootstrap";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const Cursos = () => {
-  const { login } = useContext(AuthContext);
-  const [codigo, setCodigo] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Estado de carga
-  const navigate = useNavigate();
   const [cursos, setCursos] = useState([]);
+  const [usuario, setUsuario] = useState(null); // Estado local para el usuario
+
+  useEffect(() => {
+    const obtenerUsuario = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const decoded = jwtDecode(token);
+          setUsuario(decoded.usuario);
+        }
+      } catch (error) {
+        console.error('Error al decodificar el token:', error);
+      }
+    };
+
+    obtenerUsuario();
+  }, []);
+  
+  useEffect(() => {
+    if (usuario) {
+      console.log(`Bienvenido, ${usuario.nombre}`);
+    }
+  }, [usuario]); // Ejecutar este efecto cuando `usuario` cambie
 
   useEffect(() => {
     const fetchCursos = async () => {
@@ -38,7 +55,7 @@ const Cursos = () => {
     <>
       <div className="container-curso-total">
         <div className="texto-bienvenida">
-          <h1>¡Bienvenido de nuevo, Piero!</h1>
+          {usuario ? (<h1>¡Bienvenido de nuevo, {usuario.nombre}!</h1>) : (<h1>¡Bienvenido, aún no has iniciado sesión!</h1>)}
         </div>
         <div className="container-curso">
           <Row className="container-cursos-vista">

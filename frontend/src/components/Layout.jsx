@@ -1,14 +1,12 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import NavbarCursos from './BarraNavegacionCurso';
-import BarraNavegacion from './BarraNavegacion';
+import "../Navbarcursos.css"; // Puedes usar esto para estilos personalizados
 
-const Layout = ({ children }) => {
-  const location = useLocation();
+const Layout = ({ loggedInUser, children }) => {
 
   return (
     <>
-      {location.pathname.startsWith('/cursos') ? <NavbarCursos /> : <BarraNavegacion />}
+      {loggedInUser ? <NavbarCursos /> : ''}
       {children}
     </>
   );

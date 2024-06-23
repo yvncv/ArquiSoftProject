@@ -7,7 +7,8 @@ const usuarioSchema = new Schema({
     codigo: { type: String, required: true },
     correo: { type: String, required: true },
     password: { type: String, required: true },
-    role: { type: String, required: true}
+    role: { type: String, required: true},
+    // foto: { type: String, required: false}
 }, {
     versionKey: false,
     timestamps: true,
