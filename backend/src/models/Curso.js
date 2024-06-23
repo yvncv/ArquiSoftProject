@@ -7,13 +7,8 @@ const cursoSchema = new Schema({
   carrera: { type: String, required: true },
   facultad: { type: String, required: true },
   semestre: { type: Number, required: true, min: 1, max: 10 },
-  sesiones: [
-    {
-      dia: { type: String, required: true },
-      hora: { type: String, required: true } // 'HH:mm'
-    }
-  ],
-  participantes: [{ type: Types.ObjectId, ref: 'Usuario', required: true }], // Referencia a Usuario
+  sesiones: [{ type: Types.ObjectId, ref: 'Sesion' }],
+  participantes: [{ type: Types.ObjectId, ref: 'Usuario' }],
 }, {
   versionKey: false,
   timestamps: true,

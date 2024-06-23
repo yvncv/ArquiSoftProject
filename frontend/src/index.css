@@ -54,3 +54,49 @@ code {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
+.container-curso-total{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.texto-bienvenida{
+  width: 1200px;
+  margin: 20px;
+}
+
+.container-curso-total h1{
+  font-weight: 400;
+  text-align: left;
+}
+
+.container-curso{
+  background-color: #fff;
+  width:1200px ;
+}
+
+.card{
+  margin: 20px;
+}
+
+.card-body{
+  width: 400px;
+}
+
+.card-body .card-title{
+  font-weight: 400;
+  color: #038731;
+  text-decoration-line: underline;
+}
+
+.card-body img{
+  width: 310px;
+  height: 112px;
+  background-size: unset;
+  object-fit: cover;
+}
+
+#root{
+  background-color: #f7f7f7;
+}

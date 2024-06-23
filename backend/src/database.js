@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const URI = process.env.MONGODB_URI
             ? process.env.MONGODB_URI
             //(if) si no se encuentra esta variable{
-            : 'mongodb://127.0.0.1:27017/dbArquiSoft'
+            : 'mongodb+srv://piepo:O6D2moQDl2ULeW0z@clusterarqui.kffpatr.mongodb.net/dbArquiSoft'
             //usa esta}
             //# para esto necesitamos ejecutar mongodb compass y mongod en 
             //C:\Program Files\MongoDB\Server\7.0\bin 
