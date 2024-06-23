@@ -61,8 +61,10 @@ const Register = () => {
 
   return (
     <Container>
-      <h2>Registro</h2>
-      <Form onSubmit={handleSubmit}>
+      <div className='container-formulario-logo'>
+        <div className='logo'></div>
+      </div>
+      <Form onSubmit={handleSubmit} className="container-formulario">
         <div className="d-flex flex-row">
           <Col className="mx-1">
             <Form.Group as={Col} controlId="formNombre">
@@ -147,11 +149,11 @@ const Register = () => {
           </Col>
         </div>
         <Row className="mb-3"></Row>
-        <Button variant="primary" type="submit" disabled={loading}>
+        <Button variant="success" type="submit" disabled={loading}>
           {loading ? "Registrando..." : "Registrarse"}
         </Button>
         <p className="mt-3">
-          ¿Ya tienes una cuenta? <Link to="/login">Inicia Sesión aquí</Link>
+          ¿Ya tienes una cuenta? <Link to="/">Inicia Sesión aquí</Link>
         </p>
       </Form>
 

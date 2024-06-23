@@ -16,9 +16,9 @@ cursoCtrl.getCursos = async (req, res) => {
 
 // Crear un nuevo curso
 cursoCtrl.createCursos = async (req, res) => {
-    const { nombre, codigo, grado, carrera, facultad, semestre, sesiones, participantes } = req.body;
+    const { nombre, codigo, grado, carrera, facultad, ciclo, semestre, sesiones, participantes } = req.body;
     
-    if (!nombre || !codigo || !grado || !carrera || !facultad || !semestre || !sesiones || !participantes) {
+    if (!nombre || !codigo || !grado || !carrera || !facultad || !ciclo|| !semestre || !sesiones || !participantes) {
       return res.status(400).json({ message: 'Todos los campos son obligatorios' });
     }
     
@@ -38,7 +38,7 @@ cursoCtrl.createCursos = async (req, res) => {
         return participanteId;
       }));
   
-      const newCurso = new Curso({ nombre, codigo, grado, carrera, facultad, semestre, sesiones, participantes: participantesIds });
+      const newCurso = new Curso({ nombre, codigo, grado, carrera, facultad, ciclo, semestre, sesiones, participantes: participantesIds });
       await newCurso.save();
       
       res.json({ message: "El curso ha sido registrado", data: newCurso });
@@ -72,7 +72,7 @@ cursoCtrl.getCursoById = async (req, res) => {
 
 // Actualizar un curso por ID
 cursoCtrl.updateCurso = async (req, res) => {
-    const { nombre, codigo, grado, carrera, facultad, semestre, sesiones, participantes } = req.body;
+    const { nombre, codigo, grado, carrera, facultad, ciclo, semestre, sesiones, participantes } = req.body;
     try {
         const { id } = req.params;
 
@@ -81,7 +81,7 @@ cursoCtrl.updateCurso = async (req, res) => {
         }
 
         const updatedCurso = await Curso.findByIdAndUpdate(id, {
-            nombre, codigo, grado, carrera, facultad, semestre, sesiones, participantes
+            nombre, codigo, grado, carrera, facultad, ciclo, semestre, sesiones, participantes
         }, { new: true });
 
         if (!updatedCurso) {

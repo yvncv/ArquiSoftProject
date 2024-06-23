@@ -23,8 +23,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Función para cerrar sesión
-  const logout = (usuario) => {
-    localStorage.removeItem('loggedInUser', usuario);
+  const logout = () => {
+    localStorage.removeItem('loggedInUser');
     setLoggedInUser(null);
   };
 

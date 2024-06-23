@@ -6,14 +6,10 @@ const cursoSchema = new Schema({
   grado: { type: String, required: true },
   carrera: { type: String, required: true },
   facultad: { type: String, required: true },
-  semestre: { type: Number, required: true, min: 1, max: 10 },
-  sesiones: [
-    {
-      dia: { type: String, required: true },
-      hora: { type: String, required: true } // 'HH:mm'
-    }
-  ],
-  participantes: [{ type: Types.ObjectId, ref: 'Usuario', required: true }], // Referencia a Usuario
+  ciclo: { type: Number, required: false, min: 1, max: 10},
+  semestre: { type: String, required: true },
+  sesiones: [{ type: Types.ObjectId, ref: 'Sesion', required: false }],
+  participantes: [{ type: Types.ObjectId, ref: 'Usuario', required: false }],
 }, {
   versionKey: false,
   timestamps: true,

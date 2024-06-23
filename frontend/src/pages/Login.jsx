@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Col } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -26,15 +26,16 @@ const Login = ({ setLoggedInUser }) => {
   
     try {
       const res = await axios.post('http://localhost:8080/api/usuarios/login', { codigo, password });
+      
+      const {token} = res.data;
       localStorage.setItem('token', res.data.token);
       setLoggedInUser(codigo);
-      login();
+      login(codigo);
       
       // Hacer una solicitud GET para obtener los datos del usuario
-      const token = res.data.token;
       const userDataRes = await axios.get(`http://localhost:8080/api/usuarios/login/${token}`);
       console.log('Usuario logueado:', userDataRes.data);
-      navigate('/dashboard'); // Redirige al usuario al dashboard
+      navigate('/cursos'); // Redirige al usuario al dashboard
   
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -54,12 +55,13 @@ const Login = ({ setLoggedInUser }) => {
 
   return (
     <Container>
-      <h2>Iniciar Sesión</h2>
+      <div className='container-formulario-logo'>
+        <div className='logo'></div>
+      </div>
       {loading ? ( // Mostrar mensaje de carga si se está cargando
         <p>Cargando...</p>
       ) : (
-        <Form onSubmit={handleSubmit}>
-          <Row className="mb-3">
+        <Form onSubmit={handleSubmit} className="container-formulario">
             <Form.Group as={Col} md="6" controlId="formCodigo">
               <Form.Label>Código</Form.Label>
               <Form.Control
@@ -83,8 +85,7 @@ const Login = ({ setLoggedInUser }) => {
                 required
               />
             </Form.Group>
-          </Row>
-          <Button variant="primary" type="submit">
+          <Button variant="success" type="submit">
             Iniciar Sesión
           </Button>
           <p className="mt-3">¿No tienes una cuenta? <Link to="/register">Regístrate aquí</Link></p>

@@ -2,8 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import { AuthContext } from '../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
+import { useLocation } from 'react-router-dom';
 
 const BarraNavegacion = ({ loggedInUser }) => {
+  const location = useLocation(); // Obtiene la ubicación actual
   // Obtenemos el contexto de autenticación
   const { logout } = useContext(AuthContext);
   const [usuario, setUsuario] = useState(null); // Estado local para el usuario
@@ -36,6 +38,14 @@ const BarraNavegacion = ({ loggedInUser }) => {
     logout();
     window.location.href = '/login';
   };
+
+  // Especifica las rutas en las que no quieres mostrar la barra de navegación
+  const noNavbarPaths = ['/', '/register', '/cursos'];
+
+  // Si la ubicación actual está en la lista de noNavbarPaths, no renderiza la barra de navegación
+  if (noNavbarPaths.includes(location.pathname)) {
+    return null;
+  }
 
   return (
     <Navbar expand="lg" className="bg-primary mb-3">
