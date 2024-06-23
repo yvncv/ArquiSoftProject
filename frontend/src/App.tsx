@@ -33,10 +33,7 @@ function App() {
         <>
           <Layout loggedInUser={loggedInUser}>
             <Routes>
-              <Route
-                path="/"
-                element={<Login setLoggedInUser={setLoggedInUser} />}
-              />
+            <Route path="/" element={ loggedInUser ? <Cursos/> : <Login setLoggedInUser={setLoggedInUser} />}/>
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={ loggedInUser ? <Dashboard /> : <Navigate to="/" />} />
               <Route path='/cursos' element={<Cursos/>}/>

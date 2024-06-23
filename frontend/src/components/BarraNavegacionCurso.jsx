@@ -31,7 +31,7 @@ const NavbarCursos = () => {
     // Elimina el token de autenticación del almacenamiento local
     localStorage.removeItem('token');
     logout();
-    window.location.href = '/login';
+    window.location.href = '/';
   };
   
   return (
@@ -59,9 +59,9 @@ const NavbarCursos = () => {
           <FontAwesomeIcon icon="comment" className="icon-custom" />
         </Nav>
         <Nav className="ml-auto">
-        {usuario.foto ? (<img src={usuario.foto} alt="perfil"/>) : (<img src="https://i.pinimg.com/222x/57/70/f0/5770f01a32c3c53e90ecda61483ccb08.jpg" alt="perfil"/>)}
+        {usuario ? (<img src={""} alt="perfil"/>) : (<img src="https://i.pinimg.com/222x/57/70/f0/5770f01a32c3c53e90ecda61483ccb08.jpg" alt="perfil"/>)}
         </Nav>
-        <Button className="" onClick={() => handleLogout}>Cerrar Sesion</Button>
+        <Button style={{backgroundColor: 'transparent', borderColor: 'green', color: 'green'}} onClick={handleLogout}>Cerrar Sesion</Button>
       </Navbar.Collapse>
     </Navbar>
   );

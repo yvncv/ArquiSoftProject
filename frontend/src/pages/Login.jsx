@@ -35,7 +35,7 @@ const Login = ({ setLoggedInUser }) => {
       // Hacer una solicitud GET para obtener los datos del usuario
       const userDataRes = await axios.get(`http://localhost:8080/api/usuarios/login/${token}`);
       console.log('Usuario logueado:', userDataRes.data);
-      navigate('/dashboard'); // Redirige al usuario al dashboard
+      navigate('/cursos'); // Redirige al usuario al dashboard
   
     } catch (error) {
       if (axios.isAxiosError(error)) {
