@@ -2,6 +2,27 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
 import axios from "axios";
 
+const carrerasPorFacultad = {
+  ingenieria: [
+    "Informática",
+    "Civil",
+    "Industrial",
+    "Electrónica",
+    "Mecatrónica",
+  ],
+  derecho: ["Derecho"],
+  arquitectura: ["Arquitectura"],
+  cienciasEconomicas: [
+    "Economía",
+    "Administración de Empresas",
+    "Contabilidad",
+  ],
+  psicologia: ["Psicología"],
+  lenguasModernas: ["Traducción e Interpretación", "Idiomas Modernos"],
+  medicina: ["Medicina"],
+  biologiaHumana: ["Biología", "Biomedicina"],
+};
+
 const CrearCurso = () => {
   const [formData, setFormData] = useState({
     nombre: "",
@@ -11,13 +32,15 @@ const CrearCurso = () => {
     facultad: "",
     ciclo: "",
     semestre: "",
-    sesiones: [{ dia: "", hora: "" }],
-    participantes: [] // Cambiado a un array vacío
+    grupos: [], 
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [alumnosOptions, setAlumnosOptions] = useState([]);
+  if (!Array.isArray(formData.grupos)) {
+    formData.grupos = []; // Asegurarse de que grupos sea un array vacío si no lo es
+  }
 
   useEffect(() => {
     const fetchAlumnos = async () => {
@@ -40,48 +63,77 @@ const CrearCurso = () => {
     };
 
     fetchAlumnos();
-  }, [formData.semestre, formData.carrera]);
+  }, [formData.semestre, formData.carrera, formData.ciclo]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSessionChange = (index, field, value) => {
-    const updatedSessions = [...formData.sesiones];
-    updatedSessions[index][field] = value;
-    setFormData({ ...formData, sesiones: updatedSessions });
+  const handleSessionChange = (grupoIndex, sesionIndex, field, value) => {
+    const updatedGrupos = [...formData.grupos];
+    updatedGrupos[grupoIndex].horario[sesionIndex][field] = value;
+    setFormData({ ...formData, grupos: updatedGrupos });
   };
 
-  const handleParticipantChange = (index, value) => {
-    const updatedParticipants = [...formData.participantes];
-    updatedParticipants[index] = value; // Aquí `value` es el ID del participante seleccionado
-    setFormData({ ...formData, participantes: updatedParticipants });
+  const handleParticipantChange = (grupoIndex, participanteIndex, value) => {
+    const updatedGrupos = [...formData.grupos];
+    updatedGrupos[grupoIndex].participantes[participanteIndex] = value;
+    setFormData({ ...formData, grupos: updatedGrupos });
   };
 
-  const addSession = () => {
-    setFormData({
-      ...formData,
-      sesiones: [...formData.sesiones, { dia: "", hora: "" }]
-    });
+  const handleGrupoChange = (index, value) => {
+    const updatedGrupos = [...formData.grupos];
+    updatedGrupos[index] = {
+      tipoGrupo: value,
+      horario: [],
+      participantes: [],
+    };
+    setFormData({ ...formData, grupos: updatedGrupos });
   };
 
-  const removeSession = (index) => {
-    const updatedSessions = formData.sesiones.filter((_, i) => i !== index);
-    setFormData({ ...formData, sesiones: updatedSessions });
+  const removeGrupo = (index) => {
+    const updatedGrupos = [...formData.grupos];
+    updatedGrupos.splice(index, 1);
+    setFormData({ ...formData, grupos: updatedGrupos });
   };
 
-  const addParticipant = () => {
-    setFormData({
-      ...formData,
-      participantes: [...formData.participantes, { _id: "", nombre: "" }]
-    });
+  const addGrupo = () => {
+  setFormData((prevFormData) => ({
+    ...prevFormData,
+    grupos: [
+      ...prevFormData.grupos,
+      {
+        tipoGrupo: "",
+        horario: [],
+        participantes: [],
+      },
+    ],
+  }));
+};
+
+  const addSession = (grupoIndex) => {
+    const updatedGrupos = [...formData.grupos];
+    updatedGrupos[grupoIndex].horario.push({ dia: "", hora: "" });
+    setFormData({ ...formData, grupos: updatedGrupos });
   };
-  
-  const removeParticipant = (index) => {
-    const updatedParticipants = [...formData.participantes];
-    updatedParticipants.splice(index, 1);
-    setFormData({ ...formData, participantes: updatedParticipants });
+
+  const removeSession = (grupoIndex, sesionIndex) => {
+    const updatedGrupos = [...formData.grupos];
+    updatedGrupos[grupoIndex].horario.splice(sesionIndex, 1);
+    setFormData({ ...formData, grupos: updatedGrupos });
+  };
+
+  const addParticipant = (grupoIndex) => {
+    const updatedGrupos = [...formData.grupos];
+    updatedGrupos[grupoIndex].participantes.push("");
+    setFormData({ ...formData, grupos: updatedGrupos });
+  };
+
+  const removeParticipant = (grupoIndex, participanteIndex) => {
+    const updatedGrupos = [...formData.grupos];
+    updatedGrupos[grupoIndex].participantes.splice(participanteIndex, 1);
+    setFormData({ ...formData, grupos: updatedGrupos });
   };
 
   const handleSubmit = async (event) => {
@@ -89,32 +141,35 @@ const CrearCurso = () => {
     setError("");
     setSuccess("");
     setLoading(true);
-    
+
     try {
       // Construir objeto de datos para enviar al backend
       const dataToSend = {
         ...formData,
         participantes: formData.participantes // Ya contiene solo IDs
       };
-      
+
       await axios.post("http://localhost:8080/api/cursos", dataToSend);
       setLoading(false);
       setSuccess("Curso creado exitosamente");
-      
+
       // Limpiar solo los campos necesarios en formData
       setFormData({
-        ...formData,
         nombre: "",
         codigo: "",
         grado: "",
         facultad: "",
-        sesiones: [{ dia: "", hora: "" }]
+        ciclo: "",
+        semestre: "",
+        grupos: "",
+        horario: [{ dia: "", hora: "" }],
+        participantes: []
       });
     } catch (error) {
       setLoading(false);
       setError(
         error.response?.data?.message ||
-          "Error al crear el curso, intente nuevamente"
+        "Error al crear el curso, intente nuevamente"
       );
     }
   };
@@ -122,7 +177,7 @@ const CrearCurso = () => {
   return (
     <Container className="d-flex flex-column">
       <h2>Crear curso</h2>
-      <Form onSubmit={handleSubmit} style={{backgroundColor: '#fff', padding: '30px', borderRadius: '15px'}}>
+      <Form onSubmit={handleSubmit} style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '15px' }}>
         <Row className="mb-3">
           <Col>
             <Form.Group controlId="formNombre">
@@ -169,14 +224,14 @@ const CrearCurso = () => {
                 required
               >
                 <option value="">Seleccionar Facultad</option>
-                <option value="INGENIERÍA">INGENIERÍA</option>
-                <option value="DERECHO">DERECHO</option>
-                <option value="ARQUITECTURA">ARQUITECTURA</option>
-                <option value="ECONOMÍA">ECONOMÍA</option>
-                <option value="HOTELERÍA">HOTELERÍA Y TURISMO</option>
-                <option value="PSICOLOGÍA">PSICOLOGÍA</option>
-                <option value="LENGUAS">LENGUAS MODERNAS</option>
-                <option value="BIOLOGÍA">BIOLOGÍA</option>
+                <option value="ingenieria">INGENIERÍA</option>
+                <option value="derecho">DERECHO</option>
+                <option value="arquitectura">ARQUITECTURA</option>
+                <option value="cienciasEconomicas">CIENCIAS ECONÓMICAS</option>
+                <option value="psicologia">PSICOLOGÍA</option>
+                <option value="lenguasModernas">LENGUAS MODERNAS</option>
+                <option value="medicina">MEDICINA</option>
+                <option value="biologiaHumana">BIOLOGÍA HUMANA</option>
               </Form.Select>
             </Form.Group>
             <Form.Group controlId="formCarrera">
@@ -188,11 +243,12 @@ const CrearCurso = () => {
                 required
               >
                 <option value="">Seleccionar Carrera</option>
-                <option value="INFORMÁTICA">INFORMÁTICA</option>
-                <option value="CIVIL">CIVIL</option>
-                <option value="INDUSTRIAL">INDUSTRIAL</option>
-                <option value="ELECTRÓNICA">ELECTRÓNICA</option>
-                <option value="MECATRÓNICA">MECATRÓNICA</option>
+                {formData.facultad &&
+                  carrerasPorFacultad[formData.facultad]?.map((carrera, index) => (
+                    <option key={index} value={carrera}>
+                      {carrera}
+                    </option>
+                  ))}
               </Form.Select>
             </Form.Group>
             <Form.Group controlId="formCiclo">
@@ -224,67 +280,114 @@ const CrearCurso = () => {
             </Form.Group>
           </Col>
           <Col>
-            <Form.Group controlId="formSesiones">
-              <Form.Label>Sesiones</Form.Label>
-              {formData.sesiones.map((sesion, index) => (
-                <Row key={index} className="mb-2">
-                  <Col>
-                    <Form.Select
-                      name="dia"
-                      value={sesion.dia}
-                      onChange={(e) => handleSessionChange(index, "dia", e.target.value)}
-                      required
-                    >
-                      <option value="">Seleccionar día de semana</option>
-                      <option value="Lunes">Lunes</option>
-                      <option value="Martes">Martes</option>
-                      <option value="Miércoles">Miércoles</option>
-                      <option value="Jueves">Jueves</option>
-                      <option value="Viernes">Viernes</option>
-                      <option value="Sábado">Sábado</option>
-                    </Form.Select>
-                  </Col>
-                  <Col>
-                    <Form.Control
-                      type="time"
-                      name="hora"
-                      value={sesion.hora}
-                      onChange={(e) => handleSessionChange(index, "hora", e.target.value)}
-                      required
-                    />
-                  </Col>
-                  <Col xs="auto">
-                    <Button variant="danger" onClick={() => removeSession(index)}>&times;</Button>
-                  </Col>
-                </Row>
+            {/* Grupos */}
+            <Form.Group controlId="formGrupos">
+              <Form.Label>Grupos</Form.Label>
+              {formData.grupos.map((grupo, index) => (
+                <div key={index} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
+                  <h4>Grupo {index + 1}</h4>
+                  <Row className="mb-2">
+                    <Col>
+                      <Form.Select
+                        name="tipoGrupo"
+                        value={grupo.tipoGrupo}
+                        onChange={(e) => handleGrupoChange(index, e.target.value)}
+                        required
+                      >
+                        <option value="">Seleccionar tipo de grupo</option>
+                        <option value="Teoría">Teoría</option>
+                        <option value="Taller">Taller</option>
+                        <option value="Laboratorio">Laboratorio</option>
+                      </Form.Select>
+                    </Col>
+                    <Col xs="auto">
+                      <Button
+                        variant="outline-danger"
+                        onClick={() => removeGrupo(index)}
+                      >
+                        Eliminar
+                      </Button>
+                    </Col>
+                  </Row>
+
+                  {/* Horario */}
+                  <Form.Group controlId={`formHorario-${index}`}>
+                    <Form.Label>Horario</Form.Label>
+                    {grupo.horario.map((sesion, sesionIndex) => (
+                      <Row key={sesionIndex} className="mb-2">
+                        <Col>
+                          <Form.Select
+                            name="dia"
+                            value={sesion.dia}
+                            onChange={(e) => handleSessionChange(index, sesionIndex, "dia", e.target.value)}
+                            required
+                          >
+                            <option value="">Seleccionar día de semana</option>
+                            <option value="Lunes">Lunes</option>
+                            <option value="Martes">Martes</option>
+                            <option value="Miércoles">Miércoles</option>
+                            <option value="Jueves">Jueves</option>
+                            <option value="Viernes">Viernes</option>
+                            <option value="Sábado">Sábado</option>
+                          </Form.Select>
+                        </Col>
+                        <Col>
+                          <Form.Control
+                            type="time"
+                            name="hora"
+                            value={sesion.hora}
+                            onChange={(e) => handleSessionChange(index, sesionIndex, "hora", e.target.value)}
+                            required
+                          />
+                        </Col>
+                        <Col xs="auto">
+                          <Button variant="danger" onClick={() => removeSession(index, sesionIndex)}>
+                            &times;
+                          </Button>
+                        </Col>
+                      </Row>
+                    ))}
+                    <Button variant="secondary" onClick={() => addSession(index)}>
+                      Agregar Horario
+                    </Button>
+                  </Form.Group>
+
+                  {/* Participantes */}
+                  <Form.Group controlId={`formParticipantes-${index}`} className="mt-3">
+                    <Form.Label>Participantes</Form.Label>
+                    {grupo.participantes.map((participante, participanteIndex) => (
+                      <Row key={participanteIndex} className="mb-2">
+                        <Col>
+                          <Form.Select
+                            name="participante"
+                            value={participante}
+                            onChange={(e) => handleParticipantChange(index, participanteIndex, e.target.value)}
+                            required
+                          >
+                            <option value="">Agregar participante</option>
+                            {alumnosOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </Col>
+                        <Col xs="auto">
+                          <Button variant="danger" onClick={() => removeParticipant(index, participanteIndex)}>
+                            &times;
+                          </Button>
+                        </Col>
+                      </Row>
+                    ))}
+                    <Button variant="secondary" onClick={() => addParticipant(index)}>
+                      Agregar Participante
+                    </Button>
+                  </Form.Group>
+                </div>
               ))}
-              <Button variant="secondary" onClick={addSession}>Agregar Sesión</Button>
-            </Form.Group>
-            <Form.Group controlId="formParticipantes" className="d-flex flex-column">
-              <Form.Label>Participantes</Form.Label>
-              {formData.participantes.map((participante, index) => (
-                <Row key={index} className="mb-2">
-                  <Col>
-                    <Form.Select
-                      name="participante"
-                      value={participante._id} // Assuming participante is an object with _id
-                      onChange={(e) => handleParticipantChange(index, e.target.value)}
-                      required
-                    >
-                      <option value="">Agregar participante</option>
-                      {alumnosOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Col>
-                  <Col xs="auto">
-                    <Button variant="danger" onClick={() => removeParticipant(index)}>&times;</Button>
-                  </Col>
-                </Row>
-              ))}
-              <Button variant="secondary" onClick={addParticipant}>Agregar Participante</Button>
+              <Button variant="secondary" onClick={addGrupo}>
+                Agregar Grupo
+              </Button>
             </Form.Group>
           </Col>
         </Row>
