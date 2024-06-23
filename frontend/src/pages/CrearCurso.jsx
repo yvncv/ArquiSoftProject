@@ -9,6 +9,7 @@ const CrearCurso = () => {
     grado: "",
     carrera: "",
     facultad: "",
+    ciclo: "",
     semestre: "",
     sesiones: [{ dia: "", hora: "" }],
     participantes: [] // Cambiado a un array vacío
@@ -25,7 +26,7 @@ const CrearCurso = () => {
         const filteredAlumnos = response.data.filter(
           (usuario) =>
             usuario.role === "alumno" &&
-            usuario.ciclo === formData.semestre &&
+            usuario.ciclo === formData.ciclo &&
             usuario.carrera === formData.carrera
         );
         const options = filteredAlumnos.map((alumno) => ({
@@ -119,9 +120,9 @@ const CrearCurso = () => {
   };
 
   return (
-    <Container>
+    <Container className="d-flex flex-column">
       <h2>Crear curso</h2>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} style={{backgroundColor: '#fff', padding: '30px', borderRadius: '15px'}}>
         <Row className="mb-3">
           <Col>
             <Form.Group controlId="formNombre">
@@ -194,21 +195,32 @@ const CrearCurso = () => {
                 <option value="MECATRÓNICA">MECATRÓNICA</option>
               </Form.Select>
             </Form.Group>
-            <Form.Group controlId="formSemestre">
-              <Form.Label>Semestre</Form.Label>
+            <Form.Group controlId="formCiclo">
+              <Form.Label>Ciclo</Form.Label>
               <Form.Select
-                name="semestre"
-                value={formData.semestre}
+                name="ciclo"
+                value={formData.ciclo}
                 onChange={handleChange}
                 required
               >
-                <option value="">Seleccionar Semestre</option>
+                <option value="">Seleccionar ciclo</option>
                 {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
                   <option key={num} value={num}>
                     {num}
                   </option>
                 ))}
               </Form.Select>
+            </Form.Group>
+            <Form.Group controlId="formSemestre">
+              <Form.Label>Semestre</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Ingrese semestre del curso"
+                name="semestre"
+                value={formData.semestre}
+                onChange={handleChange}
+                required
+              />
             </Form.Group>
           </Col>
           <Col>
@@ -248,7 +260,7 @@ const CrearCurso = () => {
               ))}
               <Button variant="secondary" onClick={addSession}>Agregar Sesión</Button>
             </Form.Group>
-            <Form.Group controlId="formParticipantes">
+            <Form.Group controlId="formParticipantes" className="d-flex flex-column">
               <Form.Label>Participantes</Form.Label>
               {formData.participantes.map((participante, index) => (
                 <Row key={index} className="mb-2">
