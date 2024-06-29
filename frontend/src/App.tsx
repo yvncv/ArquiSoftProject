@@ -41,7 +41,7 @@ function App() {
               <Route path='/cursos' element={<Cursos/>}/>
               <Route path="/curso/:nombre" element={<Curso />} />
               <Route path="/profile" element={ loggedInUser ? <Profile /> : <Navigate to="/" />} />
-              <Route path="/crear_curso" element={ loggedInUser?.role==="admin" ? <CrearCurso /> : <Navigate to="/dashboard" />} />
+              <Route path="/crear_curso" element={ loggedInUser?.role==="admin" ? <CrearCurso /> : <Dashboard />} />
             </Routes>
           </Layout>
         </>

@@ -8,8 +8,8 @@ const cursoSchema = new Schema({
   facultad: { type: String, required: true },
   ciclo: { type: Number, required: false, min: 1, max: 10},
   semestre: { type: String, required: true },
-  sesiones: [{ type: Types.ObjectId, ref: 'Sesion' }],
-  participantes: [{ type: Types.ObjectId, ref: 'Usuario' }],
+  sesiones: [{ type: Types.ObjectId, ref: 'Sesion', required: false }],
+  participantes: [{ type: Types.ObjectId, ref: 'Usuario', required: false }],
 }, {
   versionKey: false,
   timestamps: true,
