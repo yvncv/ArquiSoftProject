@@ -8,10 +8,12 @@ import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Dashboard from './pages/Dashboard';
 import Cursos from './pages/Cursos';
-import Curso from './pages/Curso';
 import Layout from './components/Layout.jsx';
 import Profile from './pages/Profile';
 import CrearCurso from './pages/CrearCurso';
+import GestionarUsuario from './pages/GestionarUsuario';
+import AgregarUsuario from './pages/AgregarUsuario';
+import GestionarCursos from './pages/GestionarCursos';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<DecodedToken['usuario'] | null>(null);
@@ -35,13 +37,16 @@ function App() {
         <>
           <Layout loggedInUser={loggedInUser}>
             <Routes>
-            <Route path="/" element={ loggedInUser ? <Cursos/> : <Login setLoggedInUser={setLoggedInUser} />}/>
+              <Route path="/" element={loggedInUser ? <Cursos /> : <Login setLoggedInUser={setLoggedInUser} />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={ loggedInUser ? <Dashboard /> : <Navigate to="/" />} />
-              <Route path='/cursos' element={<Cursos/>}/>
-              <Route path="/curso/:nombre" element={<Curso />} />
-              <Route path="/profile" element={ loggedInUser ? <Profile /> : <Navigate to="/" />} />
-              <Route path="/crear_curso" element={ loggedInUser?.role==="admin" ? <CrearCurso /> : <Dashboard />} />
+              <Route path="/dashboard" element={loggedInUser ? <Dashboard /> : <Navigate to="/" />} />
+              <Route path='/cursos' element={<Cursos />} />
+              <Route path="/profile" element={loggedInUser ? <Profile /> : <Navigate to="/" />} />
+              <Route path="/agregar_usuario" element={loggedInUser ? <AgregarUsuario /> : <Navigate to="/" />} />
+              <Route path="/agregar_usuario/:id" element={loggedInUser ? <AgregarUsuario /> : <Navigate to="/" />} /> {/* Ruta para editar usuario */}
+              <Route path="/gestionar_usuarios" element={loggedInUser?.role === "admin" ? <GestionarUsuario /> : <Dashboard />} />
+              <Route path="/gestionar_cursos" element={loggedInUser?.role === "admin" ? <GestionarCursos /> : <Dashboard />} />
+              <Route path="/crear_curso" element={loggedInUser?.role === "admin" ? <CrearCurso /> : <Dashboard />} />
             </Routes>
           </Layout>
         </>

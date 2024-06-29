@@ -17,31 +17,44 @@ usuarioCtrl.getUsuarios = async (req, res) => {
 };
 
 usuarioCtrl.createUsuarios = async (req, res) => {
-    const { nombre, carrera, ciclo, codigo, correo, password, role } = req.body;
+    const { nombre, facultad, carrera, ciclo, codigo, correo, role } = req.body;
+
+    // La contraseña inicial será igual al código
+    const password = codigo;
+
+    // Validación básica de campos requeridos
     if (!nombre || !codigo || !password) {
         return res.status(400).json({ msg: 'Por favor, proporciona todos los campos requeridos.' });
     }
 
     try {
+        // Verificar si ya existe un usuario con el mismo código
         let usuario = await Usuario.findOne({ codigo });
         if (usuario) {
             return res.status(400).json({ msg: 'El usuario ya existe' });
         }
 
-        usuario = new Usuario({ nombre, carrera, ciclo, codigo, correo, password, role });
+        // Crear un nuevo usuario con los datos proporcionados
+        usuario = new Usuario({ nombre, facultad, carrera, ciclo, codigo, correo, password, role });
 
+        // Encriptar la contraseña antes de guardarla en la base de datos
         const salt = await bcrypt.genSalt(10);
         usuario.password = await bcrypt.hash(password, salt);
 
+        // Guardar el usuario en la base de datos
         await usuario.save();
-        res.json({ message: "El usuario ha sido registrado" });
-        
+
+        // Responder con un mensaje de éxito
+        res.json({ message: "El usuario ha sido registrado exitosamente" });
+
+        // Crear y devolver un token JWT para autenticación posterior
         const payload = {
             usuario: {
                 id: usuario.id,
                 nombre: usuario.nombre,
                 codigo: usuario.codigo,
                 correo: usuario.correo,
+                facultad: usuario.facultad,
                 carrera: usuario.carrera,
                 ciclo: usuario.ciclo,
                 role: usuario.role,
@@ -53,7 +66,8 @@ usuarioCtrl.createUsuarios = async (req, res) => {
             res.json({ token });
         });
     } catch (err) {
-        res.status(500).json({ message: 'Error al registrar el usuario', err });
+        // Manejar errores internos del servidor
+        res.status(500).json({ message: 'Error al registrar el usuario', error: err.message });
     }
 };
 
@@ -79,9 +93,9 @@ usuarioCtrl.getUsu = async (req, res) => {
 };
 
 usuarioCtrl.deleteUsuario = async (req, res) => {
-    if (!req.usuario || req.usuario.role !== 'admin') {
-        return res.status(401).json({ message: 'No estás autorizado para realizar esta acción' });
-    }
+    // if (!req.usuario || req.usuario.role !== 'admin') {
+    //     return res.status(401).json({ message: 'No estás autorizado para realizar esta acción' });
+    // }
 
     try {
         const id = req.params.id;
@@ -93,15 +107,15 @@ usuarioCtrl.deleteUsuario = async (req, res) => {
 };
 
 usuarioCtrl.updateUsuario = async (req, res) => {
-    if (!req.usuario || req.usuario.role !== 'admin') {
-        return res.status(401).json({ message: 'No estás autorizado para realizar esta acción' });
-    }
+    // if (!req.usuario || req.usuario.role !== 'admin') {
+    //     return res.status(401).json({ message: 'No estás autorizado para realizar esta acción' });
+    // }
     
-    const { nombre, carrera, ciclo, codigo, correo, password, role } = req.body;
+    const { nombre, facultad, carrera, ciclo, codigo, correo, password, role } = req.body;
     try {
         const id = req.params.id;
         await Usuario.findByIdAndUpdate(id, {
-            nombre, carrera, ciclo, codigo, correo, password, role
+            nombre, facultad, carrera, ciclo, codigo, correo, password, role
         });
         res.json({ message: "El usuario ha sido actualizado" });
     } catch (error) {
@@ -129,6 +143,7 @@ usuarioCtrl.iniciarSesion = async (req, res) => {
                 nombre: usuario.nombre,
                 codigo: usuario.codigo,
                 correo: usuario.correo,
+                facultad: usuario.facultad,
                 carrera: usuario.carrera,
                 ciclo: usuario.ciclo,
                 role: usuario.role,

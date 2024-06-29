@@ -40,14 +40,14 @@ const NavbarCursos = () => {
       <Navbar.Toggle aria-controls="navbar-cursos-nav" />
       <Navbar.Collapse id="navbar-cursos-nav">
         <Nav className="ml-auto">
-          <Nav.Link as={Link} to="/cursos">
-            PÁGINA PRINCIPAL
+          <Nav.Link as={Link} to="/crear_curso">
+            CREAR CURSO
           </Nav.Link>
-          <Nav.Link as={Link} to="/cursos">
-            ÁREA PERSONAL
+          <Nav.Link as={Link} to="/gestionar_usuarios">
+            GESTIONAR USUARIOS
           </Nav.Link>
-          <Nav.Link as={Link} to="/cursos">
-            MIS CURSOS
+          <Nav.Link as={Link} to="/gestionar_cursos">
+            GESTIONAR CURSOS
           </Nav.Link>
         </Nav>
       </Navbar.Collapse>
@@ -59,7 +59,8 @@ const NavbarCursos = () => {
           <FontAwesomeIcon icon="comment" className="icon-custom" />
         </Nav>
         <Nav className="ml-auto">
-        {usuario ? (<img src={""} alt="perfil"/>) : (<img src="https://i.pinimg.com/222x/57/70/f0/5770f01a32c3c53e90ecda61483ccb08.jpg" alt="perfil"/>)}
+        {/* {usuario ? (<img src={usuario.foto} alt="perfil"/>) : (<img src="https://i.pinimg.com/222x/57/70/f0/5770f01a32c3c53e90ecda61483ccb08.jpg" alt="perfil"/>)} */}
+        <img src="https://i.pinimg.com/222x/57/70/f0/5770f01a32c3c53e90ecda61483ccb08.jpg" alt="perfil"/>
         </Nav>
         <Button style={{backgroundColor: 'transparent', borderColor: 'green', color: 'green'}} onClick={handleLogout}>Cerrar Sesion</Button>
       </Navbar.Collapse>

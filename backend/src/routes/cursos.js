@@ -5,7 +5,7 @@ const cursoCtrl = require('../controllers/curso.controller.js');
 // Asegúrate de que cada una de estas funciones esté definida en cursoCtrl
 router.route('/')
     .get(cursoCtrl.getCursos) // Verificar que cursoCtrl.getCursos no es undefined
-    .post(cursoCtrl.createCursos); // Verificar que cursoCtrl.createCursos no es undefined
+    .post(cursoCtrl.createCurso); // Verificar que cursoCtrl.createCursos no es undefined
 
 router.route('/:id')
     .get(cursoCtrl.getCursoById) // Verificar que cursoCtrl.getUsu no es undefined

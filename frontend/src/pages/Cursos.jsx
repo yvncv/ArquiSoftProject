@@ -37,8 +37,8 @@ const Cursos = () => {
     const fetchCursos = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/cursos");
-        console.log(response.data.data);
-        setCursos(response.data.data);
+        console.log(response.data);
+        setCursos(response.data);
         console.log(cursos);
       } catch (error) {
         setError("Error al obtener los cursos");
