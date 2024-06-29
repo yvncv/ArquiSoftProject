@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Card, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Cursos = () => {
   const [error, setError] = useState("");
   const [cursos, setCursos] = useState([]);
   const [usuario, setUsuario] = useState(null); // Estado local para el usuario
+  const navigate = useNavigate(); // Obtener el navigate
 
   useEffect(() => {
     const obtenerUsuario = async () => {
@@ -51,6 +54,10 @@ const Cursos = () => {
     return `${primeraPalabra} ${palabras.slice(1).join(" ").toUpperCase()}`;
   };
 
+  const handleCardClick = (curso) => {
+    navigate(`/curso/${curso.nombre}`, { state: { curso } });
+  };
+
   return (
     <>
       <div className="container-curso-total">
@@ -67,7 +74,7 @@ const Cursos = () => {
                   <Card className="mb-3">
                     <Card.Body>
                       <img src="/imagen-curso.svg" alt="" />
-                      <Card.Title>{curso.nombre}</Card.Title>
+                      <Card.Title onClick={() => handleCardClick(curso)}>{curso.nombre}</Card.Title>
                       <Card.Text>
                         {curso.grado.toUpperCase()}/
                         {curso.facultad.toUpperCase()}/

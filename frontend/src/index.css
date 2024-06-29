@@ -74,6 +74,7 @@ code {
 .container-curso{
   background-color: #fff;
   width:1200px ;
+  margin-bottom: 250px;
 }
 
 .card{
@@ -88,6 +89,7 @@ code {
   font-weight: 400;
   color: #038731;
   text-decoration-line: underline;
+  cursor: pointer;
 }
 
 .card-body img{
@@ -99,4 +101,89 @@ code {
 
 #root{
   background-color: #f7f7f7;
+}
+
+.container-curso-seleccionado-total{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nombre-curso{
+  width: 1200px;
+  margin: 20px;
+}
+
+.container-curso-seleccionado-total h1{
+  font-weight: 700;
+  text-align: left;
+  font-size: 30px;
+}
+
+.container-curso-seleccionado{
+  width: 1200px;
+  background-color: #fff;
+  margin-bottom: 250px;
+}
+
+.opciones-curso{
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.opciones-curso h3{
+  font-size: 16.5px;
+}
+
+.opcion{
+  height: 60px;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.opcion.activo{
+  background-color: #c8e1d3;
+  border-bottom: 3px solid #378E5B;
+  cursor: pointer;
+}
+
+.opcion:hover{
+  background-color: #e9e9e9;
+  border-bottom: 3px solid #363636;
+  cursor: pointer;
+}
+
+.seccion{
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  height: 93px;
+  padding: 20px;
+}
+
+.seccion h3{
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.footer-cursos{
+  background-color: #1A1C1B;
+  color: #CDCECE;
+  height: 300px;
+  display: flex;
+  justify-content: space-around;
+  padding-top: 30px;
+}
+
+.footer-cursos-texto{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-cursos-iconos{
+  display: flex;
+  gap: 20px;
 }
