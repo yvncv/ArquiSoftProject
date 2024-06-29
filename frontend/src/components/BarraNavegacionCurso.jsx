@@ -40,9 +40,9 @@ const NavbarCursos = () => {
       <Navbar.Toggle aria-controls="navbar-cursos-nav" />
       <Navbar.Collapse id="navbar-cursos-nav">
         <Nav className="ml-auto">
-          <Nav.Link as={Link} to="/crear_curso">
+          {/* <Nav.Link as={Link} to="/crear_curso">
             CREAR CURSO
-          </Nav.Link>
+          </Nav.Link> */}
           <Nav.Link as={Link} to="/gestionar_usuarios">
             GESTIONAR USUARIOS
           </Nav.Link>

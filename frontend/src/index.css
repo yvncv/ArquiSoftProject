@@ -12,7 +12,7 @@ code {
     monospace;
 }
 
-.container{
+.container .login{
   background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../public/urp.jpg");
   background-repeat: no-repeat;
   background-size: cover;
@@ -101,6 +101,7 @@ code {
 
 #root{
   background-color: #f7f7f7;
+  height: 100vh;
 }
 
 .container-curso-seleccionado-total{
@@ -186,4 +187,126 @@ code {
 .footer-cursos-iconos{
   display: flex;
   gap: 20px;
+}
+
+/* Gestionar Cursos */
+
+.boton-agregar-curso{
+  padding: 20px;
+  width: 100vw;
+  display: flex;
+  justify-content: end;
+}
+
+.boton-agregar-curso .btn{
+  width: 180px;
+  height: 50px;
+  border-radius: 20px;
+  background-color: #038731;
+  border: none;
+}
+
+.contenido-gestionar-curso{
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+}
+
+.buscador-gestionar-curso{
+  padding: 0px 30px 30px 30px;
+}
+
+.buscador-gestionar-curso input{
+  border-radius: 20px;
+}
+
+.tabla-gestionar-cursos{
+  padding: 0px 30px 30px 30px;
+}
+
+.tabla-gestionar-cursos{
+  border-radius: 20px;
+}
+
+.paginacion-gestionar-cursos{
+  display: flex !important;
+  justify-content: end;
+  width: 100vw;
+}
+
+.paginacion-gestionar-cursos ul{
+  padding: 0px 30px 30px 30px;
+}
+
+.paginacion-gestionar-cursos .active span{
+  background-color: #038731 !important;
+  border: none;
+}
+
+/* Crear Curso */
+
+.boton-crear-curso{
+  background-color: #038731 !important;
+  border: none !important;
+}
+
+/* Gestionar Usuarios */
+
+.boton-agregar-usuario {
+  padding: 20px;
+  width: 100vw;
+  display: flex;
+  justify-content: end;
+}
+
+.boton-agregar-usuario .btn {
+  width: 180px;
+  height: 50px;
+  border-radius: 20px;
+  background-color: #038731;
+  border: none;
+}
+
+.contenido-gestionar-usuario {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+}
+
+.buscador-gestionar-usuario {
+  padding: 0px 30px 30px 30px;
+}
+
+.buscador-gestionar-usuario input {
+  border-radius: 20px;
+}
+
+.tabla-gestionar-usuarios {
+  padding: 0px 30px 30px 30px;
+}
+
+.tabla-gestionar-usuarios {
+  border-radius: 20px;
+}
+
+.paginacion-gestionar-usuarios {
+  display: flex !important;
+  justify-content: end;
+  width: 100vw;
+}
+
+.paginacion-gestionar-usuarios ul {
+  padding: 0px 30px 30px 30px;
+}
+
+.paginacion-gestionar-usuarios .active span {
+  background-color: #038731 !important;
+  border: none;
+}
+
+/* Crear Usuario */
+
+.boton-crear-usuario{
+  background-color: #038731 !important;
+  border: none !important;
 }

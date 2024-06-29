@@ -54,7 +54,7 @@ const Login = ({ setLoggedInUser }) => {
   
 
   return (
-    <Container>
+    <Container className='login'>
       <div className='container-formulario-logo'>
         <div className='logo'></div>
       </div>

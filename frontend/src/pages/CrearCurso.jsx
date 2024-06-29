@@ -282,7 +282,8 @@ const CrearCurso = () => {
           <Col>
             {/* Grupos */}
             <Form.Group controlId="formGrupos">
-              <Form.Label>Grupos</Form.Label>
+              <Form.Label style={{"margin": "20px"}}>Grupos</Form.Label>
+              <div style={{ maxHeight: '350px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px' }}>
               {formData.grupos.map((grupo, index) => (
                 <div key={index} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
                   <h4>Grupo {index + 1}</h4>
@@ -347,7 +348,7 @@ const CrearCurso = () => {
                         </Col>
                       </Row>
                     ))}
-                    <Button variant="secondary" onClick={() => addSession(index)}>
+                    <Button style={{"margin": "10px"}} variant="secondary" onClick={() => addSession(index)}>
                       Agregar Horario
                     </Button>
                   </Form.Group>
@@ -379,19 +380,20 @@ const CrearCurso = () => {
                         </Col>
                       </Row>
                     ))}
-                    <Button variant="secondary" onClick={() => addParticipant(index)}>
+                    <Button style={{"margin": "10px"}} variant="secondary" onClick={() => addParticipant(index)}>
                       Agregar Participante
                     </Button>
                   </Form.Group>
                 </div>
               ))}
-              <Button variant="secondary" onClick={addGrupo}>
+              </div>
+              <Button style={{"margin": "10px"}} variant="secondary" onClick={addGrupo}>
                 Agregar Grupo
               </Button>
             </Form.Group>
           </Col>
         </Row>
-        <Button variant="primary" type="submit" disabled={loading}>
+        <Button className="boton-crear-curso" variant="primary" type="submit" disabled={loading}>
           {loading ? "Registrando..." : "Crear Curso"}
         </Button>
       </Form>

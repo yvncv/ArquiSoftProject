@@ -230,7 +230,7 @@ const AgregarUsuario = () => {
           </Form.Group>
         </Row>
 
-        <Button type="submit">{id ? 'Actualizar' : 'Guardar'}</Button>
+        <Button className="boton-crear-usuario" type="submit">{id ? 'Actualizar' : 'Guardar'}</Button>
       </Form>
     </Container>
   );

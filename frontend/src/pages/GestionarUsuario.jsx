@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Table from 'react-bootstrap/Table';
-import { Button } from 'react-bootstrap';
+import { Button, FormControl, InputGroup, Pagination } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import ModalEliminar from '../components/ModalEliminar';
 import axios from 'axios';
 
 function GestionarUsuarios() {
     const [lista, setLista] = useState([]);
+    const [filteredLista, setFilteredLista] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
+    const [searchTerm, setSearchTerm] = useState('');
     const [idEliminarUsuario, setIdEliminarUsuario] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
     const navigate = useNavigate();
@@ -14,6 +18,18 @@ function GestionarUsuarios() {
     useEffect(() => {
         obtenerUsuarios();
     }, []);
+
+    useEffect(() => {
+        const filtered = lista.filter(usuario => 
+            usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            usuario.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            usuario.carrera.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            usuario.correo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            usuario.role.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredLista(filtered);
+        setCurrentPage(1); // Reset page to 1 after search
+    }, [searchTerm, lista]);
 
     const obtenerUsuarios = async () => {
         try {
@@ -56,9 +72,35 @@ function GestionarUsuarios() {
         navigate('/agregar_usuario'); // Navegar al formulario de creación de usuario
     };
 
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredLista.slice(indexOfFirstItem, indexOfLastItem);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     return (
         <>
+        <div className="boton-agregar-usuario">
             <Button variant='primary' onClick={crearUsuario}>Crear Usuario</Button>
+        </div>
+        <div className='contenido-gestionar-usuario'>
+            <div className='buscador-gestionar-usuario'>
+            <InputGroup className="mb-3">
+              <FormControl
+                className='campo-buscar'
+                placeholder="Buscar usuarios"
+                aria-label="Buscar usuarios"
+                aria-describedby="basic-addon2"
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+            </InputGroup>
+            </div>
+            <div className='tabla-gestionar-usuarios'>
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -74,7 +116,7 @@ function GestionarUsuarios() {
                     </tr>
                 </thead>
                 <tbody>
-                    {lista.map(usuario => (
+                    {currentItems.map(usuario => (
                         <tr key={usuario._id}>
                             <td>{usuario._id}</td>
                             <td>{usuario.codigo}</td>
@@ -103,13 +145,26 @@ function GestionarUsuarios() {
                     ))}
                 </tbody>
             </Table>
-
-            <ModalEliminar
-                show={mostrarModal}
-                handleClose={handleCerrarModal}
-                handleConfirm={eliminarUsuario}
-                obj="usuario"
-            />
+            </div>
+            <div className='paginacion-gestionar-usuarios'>
+            <Pagination className="paginacion-gestion">
+              <Pagination.Prev onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} />
+              {Array.from({ length: Math.ceil(filteredLista.length / itemsPerPage) }, (_, i) => (
+                <Pagination.Item key={i + 1} active={i + 1 === currentPage} onClick={() => paginate(i + 1)}>
+                  {i + 1}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next onClick={() => paginate(currentPage + 1)} disabled={currentPage === Math.ceil(filteredLista.length / itemsPerPage)} />
+            </Pagination>
+            </div>
+        </div>
+        
+        <ModalEliminar
+            show={mostrarModal}
+            handleClose={handleCerrarModal}
+            handleConfirm={eliminarUsuario}
+            obj="usuario"
+        />
         </>
     );
 }
