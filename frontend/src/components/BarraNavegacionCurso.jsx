@@ -36,7 +36,7 @@ const NavbarCursos = () => {
           ) : usuario.role === 'alumno' ? (
             <>
               <Nav.Link as={Link} to="/cursos">
-                CURSOS
+                MIS CURSOS
               </Nav.Link>
             </>
           ) : (
