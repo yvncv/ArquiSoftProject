@@ -1,4 +1,5 @@
 const Curso = require("../models/Curso");
+const Sesion = require("../models/Sesion");
 const Usuario = require("../models/Usuario");
 const mongoose = require("mongoose");
 
@@ -24,6 +25,15 @@ cursoCtrl.createCurso = async (req, res) => {
   // Verificar si todos los campos obligatorios están presentes
   if (!nombre || !codigo || !grado || !carrera || !facultad || !ciclo || !semestre || !grupos) {
     return res.status(400).json({ message: "Todos los campos son obligatorios" });
+  }
+
+  let fechaInicio;
+  if (semestre === "2024-I") {
+    fechaInicio = new Date("2024-03-25");
+  } else if (semestre === "2024-II") {
+    fechaInicio = new Date("2024-08-26");
+  } else {
+    return res.status(400).json({ message: "Semestre no válido" });
   }
 
   try {
@@ -57,7 +67,28 @@ cursoCtrl.createCurso = async (req, res) => {
       grupos,
     });
 
-    // Guardar el nuevo curso en la base de datos
+    // Crear sesiones automáticamente
+    const sesiones = [];
+    let fechaInicioSesion = new Date(fechaInicio);
+
+    for (let i = 0; i < 18; i++) {
+      const fechaSesion = new Date(fechaInicioSesion);
+      fechaSesion.setDate(fechaInicioSesion.getDate() + i * 7);
+
+      const sesion = new Sesion({
+        codigo: `${codigo}-S${i + 1}`,
+        tema: `Sesión ${i + 1}`,
+        fecha: fechaSesion,
+      });
+
+      await sesion.save();
+      sesiones.push(sesion._id);
+    }
+
+    newCurso.grupos.forEach(grupo => {
+      grupo.sesiones = sesiones;
+    });
+
     await newCurso.save();
 
     // Devolver respuesta con éxito
