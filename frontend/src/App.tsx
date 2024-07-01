@@ -14,6 +14,7 @@ import GestionarUsuario from './pages/GestionarUsuario';
 import AgregarUsuario from './pages/AgregarUsuario';
 import GestionarCursos from './pages/GestionarCursos';
 import Curso from './pages/Curso';
+import GestionarSesion from './pages/GestionarSesion';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<DecodedToken['usuario'] | null>(null);
@@ -47,6 +48,7 @@ function App() {
               <Route path="/gestionar_cursos" element={loggedInUser?.role === "admin" ? <GestionarCursos /> : <Dashboard />} />
               <Route path="/curso/:nombre" element={<Curso />} />
               <Route path="/crear_curso" element={loggedInUser?.role === "admin" ? <CrearCurso /> : <Dashboard />} />
+              <Route path="/asistencia/:id" element={loggedInUser?.role === "profesor" ? <GestionarSesion /> : <Dashboard />} />
             </Routes>
           </Layout>
         </>

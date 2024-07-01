@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { Card, Accordion, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
+import { AuthContext } from "../context/AuthContext";
 
 const Curso = () => {
     const location = useLocation();
     const { curso } = location.state || {};
+    const loggedInUser = useContext(AuthContext);
     const [key, setKey] = useState('home');
+    const usuario = loggedInUser;
 
     if (!curso) {
         return <div>Curso no encontrado</div>;
@@ -25,13 +28,15 @@ const Curso = () => {
                     defaultActiveKey="curso"
                     id="uncontrolled-tab-example"
                 >
-                    <Tab className="opcion activo" eventKey="curso" title="Curso"  style={{height: 'fit-content'}}>
+                    <Tab className="opcion activo" eventKey="curso" title="Curso" style={{height: 'fit-content'}}>
                         <div className="container-curso-seleccionado" >
                             <div className="seccion" >
                                 <FontAwesomeIcon icon="chevron-right" size="1x" />
                                 <h3>General</h3>
                             </div>
-                            
+                            <div className="seccion semana" >
+                                
+                            </div>
                         </div>
                     </Tab>
                     <Tab className="opcion" eventKey="participantes" title="Participantes">
@@ -40,9 +45,11 @@ const Curso = () => {
                     <Tab className="opcion" eventKey="calificaciones" title="Calificaciones">
                         
                     </Tab>
-                    <Tab className="opcion" eventKey="competencias" title="Competencias">
-
-                    </Tab>
+                    {usuario.role === "alumno" 
+                        ? (<Tab className="opcion" eventKey="competencias" title="Competencias"></Tab>)
+                        : ("")
+                    }
+                    
                 </Tabs>
             </div>
         </>

@@ -40,7 +40,11 @@ const NavbarCursos = () => {
               </Nav.Link>
             </>
           ) : (
-            ''
+            <>
+              <Nav.Link as={Link} to="/cursos">
+                CURSOS
+              </Nav.Link>
+            </>
           )}
         </Nav>
       </Navbar.Collapse>

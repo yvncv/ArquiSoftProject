@@ -7,12 +7,12 @@ const sesionSchema = new Schema({
   participantes: [{ 
     participante: { type: Types.ObjectId, ref:  'Usuario' },
     asistencia: { 
-      estado: { type: Types.ObjectId },
+      estado: { type: String, required: false },
       hora: { type: Date, required: false }
     },
     participacion: {
-      comentario: { type: String },
-      fecha: { type: Date, required: false }  
+      comentario: { type: String, required: false },
+      fecha: { type: Date, default: Date.now, required: false }  
     }
   }],
 
