@@ -12,7 +12,7 @@ const sesionSchema = new Schema({
     },
     participacion: {
       comentario: { type: String, required: false },
-      fecha: { type: Date, default: Date.now, required: false }  
+      fecha: { type: Date, required: false }  
     }
   }],
 
