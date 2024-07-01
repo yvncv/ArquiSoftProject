@@ -87,7 +87,7 @@ const Login = ({ setLoggedInUser }) => {
           <Button variant="success" type="submit">
             Iniciar Sesión
           </Button>
-          <p className="mt-3">¿No tienes una cuenta? <Link to="/register">Regístrate aquí</Link></p>
+          <p className="mt-3">¿No tienes una cuenta? <Link to="/">Solicita aquí</Link></p>
         </Form>
       )}
       {error && <p>{error}</p>}
