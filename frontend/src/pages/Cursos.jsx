@@ -38,15 +38,24 @@ const Cursos = () => {
       try {
         const response = await axios.get("http://localhost:8080/api/cursos");
         console.log(response.data);
-        setCursos(response.data);
-        console.log(cursos);
+        if (usuario) {
+          console.log("Hola")
+          const cursosFiltrados = response.data.filter(curso =>
+            curso.grupos.some(grupo => grupo.participantes.includes(usuario.id))
+          );
+          console.log(usuario._id);
+          setCursos(cursosFiltrados);
+        } else {
+          setCursos([]);
+        }
       } catch (error) {
         setError("Error al obtener los cursos");
       }
     };
-
-    fetchCursos();
-  }, []);
+    if (usuario) {
+      fetchCursos();
+    }
+  }, [usuario]);
 
   const formatCarrera = (carrera) => {
     const palabras = carrera.split(" ");

@@ -11,6 +11,7 @@ import Cursos from './pages/Cursos';
 import Layout from './components/Layout.jsx';
 import Profile from './pages/Profile';
 import CrearCurso from './pages/CrearCurso';
+import Curso from './pages/Curso';
 import GestionarUsuario from './pages/GestionarUsuario';
 import AgregarUsuario from './pages/AgregarUsuario';
 import GestionarCursos from './pages/GestionarCursos';
@@ -41,6 +42,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={loggedInUser ? <Dashboard /> : <Navigate to="/" />} />
               <Route path='/cursos' element={<Cursos />} />
+              <Route path="/curso/:nombre" element={<Curso />} />
               <Route path="/profile" element={loggedInUser ? <Profile /> : <Navigate to="/" />} />
               <Route path="/agregar_usuario" element={loggedInUser ? <AgregarUsuario /> : <Navigate to="/" />} />
               <Route path="/agregar_usuario/:id" element={loggedInUser ? <AgregarUsuario /> : <Navigate to="/" />} /> {/* Ruta para editar usuario */}
