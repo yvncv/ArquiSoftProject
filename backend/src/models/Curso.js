@@ -36,7 +36,7 @@ const cursoSchema = new Schema(
         tipoGrupo: { type: String, required: true },
         horario: [{ dia: { type: String }, hora: { type: String } }],
         participantes: [{ type: Types.ObjectId, ref: "Usuario", required: false }],
-        sesiones: [{ type: Types.ObjectId, ref: "Sesion" }]
+        semanas: [{ type: Types.ObjectId, ref: "Semana", required: false}]
       }
     ],
     
