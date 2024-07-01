@@ -26,14 +26,13 @@ const Login = ({ setLoggedInUser }) => {
   
     try {
       const res = await axios.post('http://localhost:8080/api/usuarios/login', { codigo, password });
-      
-      const {token} = res.data;
       localStorage.setItem('token', res.data.token);
-      setLoggedInUser(codigo);
-      login(codigo);
-      
+      const {token} = res.data;
       // Hacer una solicitud GET para obtener los datos del usuario
       const userDataRes = await axios.get(`http://localhost:8080/api/usuarios/login/${token}`);
+      setLoggedInUser(userDataRes.data);
+      login(userDataRes.data.usuario);
+      
       console.log('Usuario logueado:', userDataRes.data);
       navigate('/cursos'); // Redirige al usuario al dashboard
   
@@ -88,7 +87,7 @@ const Login = ({ setLoggedInUser }) => {
           <Button variant="success" type="submit">
             Iniciar Sesión
           </Button>
-          <p className="mt-3">¿No tienes una cuenta? <Link to="/register">Regístrate aquí</Link></p>
+          <p className="mt-3">¿No tienes una cuenta? <Link to="/">Solicita aquí</Link></p>
         </Form>
       )}
       {error && <p>{error}</p>}

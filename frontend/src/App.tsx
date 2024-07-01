@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import { AuthProvider } from './context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import { DecodedToken } from './types/DecodedToken';
@@ -15,6 +14,7 @@ import Curso from './pages/Curso';
 import GestionarUsuario from './pages/GestionarUsuario';
 import AgregarUsuario from './pages/AgregarUsuario';
 import GestionarCursos from './pages/GestionarCursos';
+import Curso from './pages/Curso';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<DecodedToken['usuario'] | null>(null);
@@ -39,7 +39,6 @@ function App() {
           <Layout loggedInUser={loggedInUser}>
             <Routes>
               <Route path="/" element={loggedInUser ? <Cursos /> : <Login setLoggedInUser={setLoggedInUser} />} />
-              <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={loggedInUser ? <Dashboard /> : <Navigate to="/" />} />
               <Route path='/cursos' element={<Cursos />} />
               <Route path="/curso/:nombre" element={<Curso />} />
@@ -48,6 +47,7 @@ function App() {
               <Route path="/agregar_usuario/:id" element={loggedInUser ? <AgregarUsuario /> : <Navigate to="/" />} /> {/* Ruta para editar usuario */}
               <Route path="/gestionar_usuarios" element={loggedInUser?.role === "admin" ? <GestionarUsuario /> : <Dashboard />} />
               <Route path="/gestionar_cursos" element={loggedInUser?.role === "admin" ? <GestionarCursos /> : <Dashboard />} />
+              <Route path="/curso/:nombre" element={<Curso />} />
               <Route path="/crear_curso" element={loggedInUser?.role === "admin" ? <CrearCurso /> : <Dashboard />} />
             </Routes>
           </Layout>

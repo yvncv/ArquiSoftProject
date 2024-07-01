@@ -3,10 +3,8 @@ import { Card, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Cursos = () => {
-  const [error, setError] = useState("");
   const [cursos, setCursos] = useState([]);
   const [usuario, setUsuario] = useState(null); // Estado local para el usuario
   const navigate = useNavigate(); // Obtener el navigate
@@ -49,7 +47,7 @@ const Cursos = () => {
           setCursos([]);
         }
       } catch (error) {
-        setError("Error al obtener los cursos");
+        console.log(error);
       }
     };
     if (usuario) {
