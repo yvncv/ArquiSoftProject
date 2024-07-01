@@ -101,7 +101,7 @@ code {
 
 #root{
   background-color: #f7f7f7;
-  height: 100vh;
+  height: 100%;
 }
 
 .container-curso-seleccionado-total{

@@ -14,7 +14,6 @@ import Curso from './pages/Curso';
 import GestionarUsuario from './pages/GestionarUsuario';
 import AgregarUsuario from './pages/AgregarUsuario';
 import GestionarCursos from './pages/GestionarCursos';
-import Curso from './pages/Curso';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState<DecodedToken['usuario'] | null>(null);

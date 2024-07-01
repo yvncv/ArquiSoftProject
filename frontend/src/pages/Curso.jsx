@@ -14,6 +14,13 @@ const Curso = () => {
         return <div>Curso no encontrado</div>;
     }
 
+    const semanas = [];
+    curso.grupos.forEach(grupo => {
+        grupo.semanas.forEach(semanaId => {
+            semanas.push(semanaId);
+        });
+    });
+
     return (
         <>
             <div className="container-curso-seleccionado-total">
@@ -31,7 +38,12 @@ const Curso = () => {
                                 <FontAwesomeIcon icon="chevron-right" size="1x" />
                                 <h3>General</h3>
                             </div>
-                            
+                            {semanas.map((semanaId, index) => (
+                                <div key={semanaId} className="seccion">
+                                    <FontAwesomeIcon icon="chevron-right" size="1x" />
+                                    <h3>Semana {index + 1}</h3>
+                                </div>
+                            ))}
                         </div>
                     </Tab>
                     <Tab className="opcion" eventKey="participantes" title="Participantes">

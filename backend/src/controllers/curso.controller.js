@@ -1,5 +1,6 @@
 const Curso = require("../models/Curso");
 const Sesion = require("../models/Sesion");
+const Semana = require("../models/Semana");
 const Usuario = require("../models/Usuario");
 const mongoose = require("mongoose");
 
@@ -19,8 +20,7 @@ cursoCtrl.getCursos = async (req, res) => {
 
 // Crear un nuevo curso
 cursoCtrl.createCurso = async (req, res) => {
-  const { nombre, codigo, grado, carrera, facultad, ciclo, semestre, grupos } =
-    req.body;
+  const { nombre, codigo, grado, carrera, facultad, ciclo, semestre, grupos } = req.body;
 
   // Verificar si todos los campos obligatorios están presentes
   if (!nombre || !codigo || !grado || !carrera || !facultad || !ciclo || !semestre || !grupos) {
@@ -67,26 +67,53 @@ cursoCtrl.createCurso = async (req, res) => {
       grupos,
     });
 
-    // Crear sesiones automáticamente
-    const sesiones = [];
-    let fechaInicioSesion = new Date(fechaInicio);
+    // Crear semanas y sesiones automáticamente
+    const semanas = [];
+    let fechaInicioSemana = new Date(fechaInicio);
 
     for (let i = 0; i < 18; i++) {
-      const fechaSesion = new Date(fechaInicioSesion);
-      fechaSesion.setDate(fechaInicioSesion.getDate() + i * 7);
+      const fechaFinSemana = new Date(fechaInicioSemana);
+      fechaFinSemana.setDate(fechaInicioSemana.getDate() + 6);
 
-      const sesion = new Sesion({
-        codigo: `${codigo}-S${i + 1}`,
-        tema: `Sesión ${i + 1}`,
-        fecha: fechaSesion,
+      const sesiones = [];
+      for (const grupo of grupos) {
+        for (const horario of grupo.horario) {
+          const [hora, minuto] = horario.hora.split(":").map(Number);
+          const diaSemana = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(horario.dia);
+
+          const fechaSesion = new Date(fechaInicioSemana);
+          fechaSesion.setDate(fechaInicioSemana.getDate() + diaSemana);
+          fechaSesion.setHours(hora, minuto);
+
+          const sesion = new Sesion({
+            tema: `Sesión ${i + 1} - ${horario.dia} ${horario.hora}`,
+            fecha: fechaSesion,
+            participantes: grupo.participantes.map(participante => ({
+              participante: participante
+            }))
+          });
+
+          await sesion.save();
+          sesiones.push(sesion._id);
+        }
+      }
+
+      const semana = new Semana({
+        sesiones,
+        fecha: {
+          inicio: fechaInicioSemana,
+          fin: fechaFinSemana,
+        },
       });
 
-      await sesion.save();
-      sesiones.push(sesion._id);
+      await semana.save();
+      semanas.push(semana._id);
+
+      fechaInicioSemana.setDate(fechaInicioSemana.getDate() + 7);
     }
 
     newCurso.grupos.forEach(grupo => {
-      grupo.sesiones = sesiones;
+      grupo.semanas = semanas;
     });
 
     await newCurso.save();
@@ -99,6 +126,9 @@ cursoCtrl.createCurso = async (req, res) => {
     res.status(500).json({ message: "Error al registrar el curso, intente nuevamente", error: error.message });
   }
 };
+
+
+
 
 // Obtener un curso específico por ID
 cursoCtrl.getCursoById = async (req, res) => {
