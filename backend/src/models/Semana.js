@@ -3,8 +3,8 @@ const { Schema, model, Types } = require('mongoose');
 const semanaSchema = new Schema({
     sesiones: [{ type: Types.ObjectId, ref:  'Sesion' }],
     fecha: { 
-        inicio: { type: Types.Datetime, required: true },
-        fin: { type: Types.Datetime, required: true }
+        inicio: { type: Date, required: true },
+        fin: { type: Date, required: true }
     }
 }, {
   versionKey: false,

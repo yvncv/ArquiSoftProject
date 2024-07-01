@@ -8,11 +8,11 @@ const sesionSchema = new Schema({
     participante: { type: Types.ObjectId, ref:  'Usuario' },
     asistencia: { 
       estado: { type: Types.ObjectId },
-      hora: { type: Types.DateTime, required: false }
+      hora: { type: Date, required: false }
     },
     participacion: {
       comentario: { type: String },
-      fecha: { type: Types.DateTime, required: false }  
+      fecha: { type: Date, required: false }  
     }
   }],
 
