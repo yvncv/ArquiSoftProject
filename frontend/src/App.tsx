@@ -10,10 +10,10 @@ import Cursos from './pages/Cursos';
 import Layout from './components/Layout.jsx';
 import Profile from './pages/Profile';
 import CrearCurso from './pages/CrearCurso';
-import Curso from './pages/Curso';
 import GestionarUsuario from './pages/GestionarUsuario';
 import AgregarUsuario from './pages/AgregarUsuario';
 import GestionarCursos from './pages/GestionarCursos';
+import GestionarSesion from './pages/GestionarSesion';
 import Curso from './pages/Curso';
 
 function App() {

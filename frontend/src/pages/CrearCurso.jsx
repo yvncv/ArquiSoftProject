@@ -38,12 +38,14 @@ const CrearCurso = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [alumnosOptions, setAlumnosOptions] = useState([]);
+  const [profesoresOptions, setProfesoresOptions] = useState([]);
+
   if (!Array.isArray(formData.grupos)) {
-    formData.grupos = []; // Asegurarse de que grupos sea un array vacío si no lo es
+    formData.grupos = [];
   }
 
   useEffect(() => {
-    const fetchAlumnos = async () => {
+    const fetchAlumnosYProfesores = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/usuarios/");
         const filteredAlumnos = response.data.filter(
@@ -52,18 +54,29 @@ const CrearCurso = () => {
             usuario.ciclo === formData.ciclo &&
             usuario.carrera === formData.carrera
         );
-        const options = filteredAlumnos.map((alumno) => ({
+        const filteredProfesores = response.data.filter(
+          (usuario) =>
+            usuario.role === "profesor" && usuario.facultad === formData.facultad
+        );
+
+        const alumnosOptions = filteredAlumnos.map((alumno) => ({
           value: `${alumno._id}`,
           label: `${alumno.nombre}`,
         }));
-        setAlumnosOptions(options);
+        const profesoresOptions = filteredProfesores.map((profesor) => ({
+          value: `${profesor._id}`,
+          label: `${profesor.nombre}`,
+        }));
+
+        setAlumnosOptions(alumnosOptions);
+        setProfesoresOptions(profesoresOptions);
       } catch (error) {
-        console.error("Error fetching students:", error);
+        console.error("Error fetching students and professors:", error);
       }
     };
 
-    fetchAlumnos();
-  }, [formData.semestre, formData.carrera, formData.ciclo]);
+    fetchAlumnosYProfesores();
+  }, [formData.semestre, formData.carrera, formData.ciclo, formData.facultad]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -87,7 +100,7 @@ const CrearCurso = () => {
     updatedGrupos[index] = {
       tipoGrupo: value,
       horario: [],
-      participantes: [],
+      participantes: [{ tipo: "profesor", value: "" }],
     };
     setFormData({ ...formData, grupos: updatedGrupos });
   };
@@ -106,7 +119,7 @@ const CrearCurso = () => {
         {
           tipoGrupo: "",
           horario: [],
-          participantes: [],
+          participantes: [{ tipo: "profesor", value: "" }], // Inicialmente agregamos un campo para el profesor
         },
       ],
     }));
@@ -126,7 +139,7 @@ const CrearCurso = () => {
 
   const addParticipant = (grupoIndex) => {
     const updatedGrupos = [...formData.grupos];
-    updatedGrupos[grupoIndex].participantes.push("");
+    updatedGrupos[grupoIndex].participantes.push({ tipo: "alumno", value: "" });
     setFormData({ ...formData, grupos: updatedGrupos });
   };
 
@@ -143,27 +156,23 @@ const CrearCurso = () => {
     setLoading(true);
 
     try {
-      // Construir objeto de datos para enviar al backend
       const dataToSend = {
         ...formData,
-        participantes: formData.participantes, // Ya contiene solo IDs
       };
 
       await axios.post("http://localhost:8080/api/cursos", dataToSend);
       setLoading(false);
       setSuccess("Curso creado exitosamente");
 
-      // Limpiar solo los campos necesarios en formData
       setFormData({
         nombre: "",
         codigo: "",
         grado: "",
         facultad: "",
+        carrera: "",
         ciclo: "",
         semestre: "",
-        grupos: "",
-        horario: [{ dia: "", hora: "" }],
-        participantes: [],
+        grupos: [],
       });
     } catch (error) {
       setLoading(false);
@@ -278,8 +287,7 @@ const CrearCurso = () => {
             </Form.Group>
             <Form.Group controlId="formSemestre">
               <Form.Label>Semestre</Form.Label>
-              <Form.Control
-                as="select"
+              <Form.Select
                 name="semestre"
                 value={formData.semestre}
                 onChange={handleChange}
@@ -288,11 +296,10 @@ const CrearCurso = () => {
                 <option value="">Seleccione un semestre</option>
                 <option value="2024-I">2024-I</option>
                 <option value="2024-II">2024-II</option>
-              </Form.Control>
+              </Form.Select>
             </Form.Group>
           </Col>
           <Col>
-            {/* Grupos */}
             <Form.Group controlId="formGrupos">
               <Form.Label style={{ margin: "20px" }}>Grupos</Form.Label>
               <div
@@ -338,8 +345,6 @@ const CrearCurso = () => {
                         </Button>
                       </Col>
                     </Row>
-
-                    {/* Horario */}
                     <Form.Group controlId={`formHorario-${index}`}>
                       <Form.Label>Horario</Form.Label>
                       {grupo.horario.map((sesion, sesionIndex) => (
@@ -404,29 +409,54 @@ const CrearCurso = () => {
                       </Button>
                     </Form.Group>
 
-                    {/* Participantes */}
                     <Form.Group
                       controlId={`formParticipantes-${index}`}
                       className="mt-3"
                     >
+                      <Form.Label>Profesor</Form.Label>
+                      <Row className="mb-2">
+                        <Col>
+                          <Form.Select
+                            name="profesor"
+                            value={grupo.participantes[0].value}
+                            onChange={(e) =>
+                              handleParticipantChange(
+                                index,
+                                0,
+                                e.target.value
+                              )
+                            }
+                            required
+                          >
+                            <option value="">Seleccionar Profesor</option>
+                            {profesoresOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </Col>
+                      </Row>
                       <Form.Label>Participantes</Form.Label>
-                      {grupo.participantes.map(
+                      {grupo.participantes.slice(1).map(
                         (participante, participanteIndex) => (
-                          <Row key={participanteIndex} className="mb-2">
+                          <Row key={participanteIndex + 1} className="mb-2">
                             <Col>
                               <Form.Select
                                 name="participante"
-                                value={participante}
+                                value={participante.value}
                                 onChange={(e) =>
                                   handleParticipantChange(
                                     index,
-                                    participanteIndex,
+                                    participanteIndex + 1,
                                     e.target.value
                                   )
                                 }
                                 required
                               >
-                                <option value="">Agregar participante</option>
+                                <option value="">
+                                  Agregar participante
+                                </option>
                                 {alumnosOptions.map((option) => (
                                   <option
                                     key={option.value}
@@ -441,7 +471,7 @@ const CrearCurso = () => {
                               <Button
                                 variant="danger"
                                 onClick={() =>
-                                  removeParticipant(index, participanteIndex)
+                                  removeParticipant(index, participanteIndex + 1)
                                 }
                               >
                                 &times;

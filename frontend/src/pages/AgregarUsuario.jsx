@@ -132,7 +132,7 @@ const AgregarUsuario = () => {
           </Form.Group>
         </Row>
 
-        {usuario.role === 'alumno' && (
+        {(usuario.role === 'alumno' || usuario.role ==='profesor')&& (
           <>
             <Row className="mb-3">
               <Form.Group as={Col} md="6" controlId="formFacultad">
@@ -141,7 +141,7 @@ const AgregarUsuario = () => {
                   name="facultad"
                   value={usuario.facultad}
                   onChange={capturarDatos}
-                  required
+                  required={usuario.role === "alumno"}
                 >
                   <option value="">Seleccionar Facultad</option>
                   <option value="ingenieria">INGENIERÍA</option>
@@ -161,7 +161,7 @@ const AgregarUsuario = () => {
                   name="carrera"
                   value={usuario.carrera}
                   onChange={capturarDatos}
-                  required
+                  required={usuario.role === "alumno"}
                 >
                   <option value="">Seleccionar Carrera</option>
                   {usuario.facultad && carrerasPorFacultad[usuario.facultad]?.map((carrera, index) => (
@@ -180,7 +180,7 @@ const AgregarUsuario = () => {
                   name="ciclo"
                   value={usuario.ciclo}
                   onChange={capturarDatos}
-                  required
+                  required={usuario.role === "alumno"}
                 >
                   <option value="">Seleccionar ciclo</option>
                   {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
