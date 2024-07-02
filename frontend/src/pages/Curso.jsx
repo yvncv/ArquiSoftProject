@@ -41,7 +41,7 @@ const Curso = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { curso } = location.state || {};
-  const loggedInUser = useContext(AuthContext);
+  const {loggedInUser} = useContext(AuthContext);
   const usuario = loggedInUser;
   const [key, setKey] = useState("home");
   const [participantes, setParticipantes] = useState([]);
@@ -284,7 +284,7 @@ const Curso = () => {
                           {semana.sesiones.length > 0 ? (
                             semana.sesiones.map((sesion, idx) => (
                               <li key={idx}>
-                                
+                                {usuario.role === "profesor" ? (
                                   <a style={{color: 'green', fontWeight: '700'}}
                                   href={`#/asistencia/${sesion._id}`} // o usa react-router-dom si es necesario
                                   onClick={(e) => {
@@ -293,7 +293,8 @@ const Curso = () => {
                                   }}
                                 >
                                   {sesion.tema}
-                                </a>
+                                </a>) : (<p>{sesion.tema}</p>)
+                                }
                                 
                               </li>
                             ))
