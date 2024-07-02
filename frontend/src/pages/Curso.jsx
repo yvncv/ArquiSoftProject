@@ -236,39 +236,39 @@ const Curso = () => {
         >
           <Tab eventKey="curso" title="Curso" style={{ height: "fit-content" }}>
             <div className="container-curso-seleccionado">
-              <div className="seccion">
-                <FontAwesomeIcon icon="chevron-right" size="1x" />
-                <h3>General</h3>
-              </div>
-              {/* <Accordion>
-                {semanas.map((semanaId, index) => (
-                  <Card key={semanaId}>
-                    <Card.Header>
-                      <Accordion.Toggle
-                        as={Button}
-                        variant="link"
-                        eventKey={`${index}`}
-                      >
-                        Semana {index + 1}
-                      </Accordion.Toggle>
-                    </Card.Header>
-                    <Accordion.Collapse eventKey={`${index}`}>
-                      <Card.Body>
+              <Accordion defaultActiveKey="0">
+                <Accordion.Item eventKey={0}>
+                  <Accordion.Header>General</Accordion.Header>
+                </Accordion.Item>
+                {console.log(semanas)}
+                {semanas.length > 0 ? (
+                  semanas.map((semana, index) => (
+                    <Accordion.Item eventKey={`${index}`} key={semana._id}>
+                      <Accordion.Header>Semana {index + 1}</Accordion.Header>
+                      <Accordion.Body>
                         <ul>
-                          {curso.grupos
-                            .flatMap((grupo) => grupo.sesiones)
-                            .map((sesion, sesionIndex) => (
-                              <li key={sesionIndex}>
-                                {sesion.tema} -{" "}
-                                {new Date(sesion.fecha).toLocaleDateString()}
-                              </li>
-                            ))}
+                          {semana.sesiones.length > 0 ? (
+                            semana.sesiones.map((sesion, sesionIndex) =>
+                              sesion && sesion.tema ? (
+                                <li key={sesionIndex}>
+                                  {sesion.tema} -{" "}
+                                  {new Date(sesion.fecha).toLocaleDateString()}
+                                </li>
+                              ) : (
+                                <li key={sesionIndex}>Sesión no disponible</li>
+                              )
+                            )
+                          ) : (
+                            <li>No hay sesiones disponibles</li>
+                          )}
                         </ul>
-                      </Card.Body>
-                    </Accordion.Collapse>
-                  </Card>
-                ))}
-              </Accordion> */}
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  ))
+                ) : (
+                  <div>No hay semanas disponibles</div>
+                )}
+              </Accordion>
             </div>
           </Tab>
           <Tab eventKey="participantes" title="Participantes">
