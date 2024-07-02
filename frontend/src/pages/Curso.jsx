@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Card } from "react-bootstrap";
 import { Pie } from "react-chartjs-2";
 import {
   Table,
@@ -283,11 +284,17 @@ const Curso = () => {
                           {semana.sesiones.length > 0 ? (
                             semana.sesiones.map((sesion, idx) => (
                               <li key={idx}>
-                                <button
-                                  onClick={() => handleSessionClick(sesion._id)}
+                                
+                                  <a style={{color: 'green', fontWeight: '700'}}
+                                  href={`#/asistencia/${sesion._id}`} // o usa react-router-dom si es necesario
+                                  onClick={(e) => {
+                                    e.preventDefault(); // prevenir el comportamiento predeterminado del enlace
+                                    handleSessionClick(sesion._id);
+                                  }}
                                 >
                                   {sesion.tema}
-                                </button>
+                                </a>
+                                
                               </li>
                             ))
                           ) : (
@@ -303,6 +310,31 @@ const Curso = () => {
               </Accordion>
             </div>
           </Tab>
+
+          {usuario.role === 'profesor' || usuario.role === 'admin' ? ('') : (
+            <Tab eventKey="estadisticas" title="Estadísticas" className="">
+              <Card style={{ width: "", margin: "" }}>
+                <Card.Header>
+                  <Card.Title>Asistencias en sesiones</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <Pie style={{ height: "" }} data={data} options={{ maintainAspectRatio: false }} />
+                </Card.Body>
+              </Card>
+              <Card style={{ width: "", margin: "20px" }}>
+                <Card.Header>
+                  <Card.Title>Participaciones en sesiones</Card.Title>
+                </Card.Header>
+                <Card.Body>
+                  <Pie
+                    data={dataParticipacion}
+                    options={{ maintainAspectRatio: false }}
+                  />
+                </Card.Body>
+              </Card>
+            </Tab>
+          )}
+
           <Tab
             eventKey="participantes"
             title="Participantes"
