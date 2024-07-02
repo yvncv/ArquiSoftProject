@@ -1,36 +1,43 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useLocation  } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
-import { Table, FormControl, InputGroup } from "react-bootstrap";
+import {
+  Table,
+  FormControl,
+  InputGroup,
+  Accordion,
+  Card,
+  Button,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import {
-    Chart as ChartJS,
-    ArcElement,
-    Tooltip,
-    Legend,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    RadialLinearScale
-  } from 'chart.js';
-  
-  ChartJS.register(
-    ArcElement,
-    Tooltip,
-    Legend,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    RadialLinearScale
-  );
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  RadialLinearScale,
+} from "chart.js";
+
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  RadialLinearScale
+);
 
 const Curso = () => {
   const location = useLocation();
@@ -44,6 +51,10 @@ const Curso = () => {
   const [asistencias, setAsistencias] = useState([]);
   const [participaciones, setParticipaciones] = useState([]);
   const [estadisticas, setEstadisticas] = useState({ total: 0, presente: 0 });
+  const [estadisticasParticipacion, setEstadisticasParticipacion] = useState({
+    total: 0,
+    participo: 0,
+  });
 
   useEffect(() => {
     if (curso) {
@@ -84,81 +95,122 @@ const Curso = () => {
 
   useEffect(() => {
     const fetchAsistencias = async () => {
-        try {
-            const semanasIds = curso.grupos.flatMap(grupo => grupo.semanas);
-                const semanasPromises = semanasIds.map(id => axios.get(`http://localhost:8080/api/semanas/${id}`));
-                const semanasResponses = await Promise.all(semanasPromises);
-                const semanasData = semanasResponses.map(response => response.data);
+      try {
+        const semanasIds = curso.grupos.flatMap((grupo) => grupo.semanas);
+        const semanasPromises = semanasIds.map((id) =>
+          axios.get(`http://localhost:8080/api/semanas/${id}`)
+        );
+        const semanasResponses = await Promise.all(semanasPromises);
+        const semanasData = semanasResponses.map((response) => response.data);
 
-                let asistenciasData = [];
-                let participacionesData = [];
-                let sesionesData = [];
-                let totalSesiones = 0;
-                let sesionesPresentes = 0;
+        let asistenciasData = [];
+        let participacionesData = [];
+        let sesionesData = [];
+        let totalSesiones = 0;
+        let sesionesPresentes = 0;
+        let sesionesParticipo = 0;
 
-                for (const semana of semanasData) {
-                    for (const sesionId of semana.sesiones) {
-                        totalSesiones++;
-                        const sesionResponse = await axios.get(`http://localhost:8080/api/sesiones/${sesionId}`);
-                        const sesion = sesionResponse.data;
-                        sesionesData.push(sesion);
+        for (const semana of semanasData) {
+          for (const sesionId of semana.sesiones) {
+            totalSesiones++;
+            const sesionResponse = await axios.get(
+              `http://localhost:8080/api/sesiones/${sesionId}`
+            );
+            const sesion = sesionResponse.data;
+            sesionesData.push(sesion);
 
-                        const asistencia = sesion.participantes.find(p => p.participante === usuario.loggedInUser.id)?.asistencia;
-                        const participacion = sesion.participantes.find(p => p.participante === usuario.loggedInUser.id)?.participacion;
+            const asistencia = sesion.participantes.find(
+              (p) => p.participante === usuario.loggedInUser.id
+            )?.asistencia;
+            const participacion = sesion.participantes.find(
+              (p) => p.participante === usuario.loggedInUser.id
+            )?.participacion;
 
-                        if (asistencia?.estado === "presente") {
-                            sesionesPresentes++;
-                        }
+            if (asistencia?.estado === "presente") {
+              sesionesPresentes++;
+            }
 
-                        asistenciasData.push({
-                            tema: sesion.tema,
-                            fecha: sesion.fecha,
-                            asistencia: asistencia || { estado: "No registrado", hora: null }
-                        });
+            if (participacion?.comentario) {
+              sesionesParticipo++;
+            }
 
-                        participacionesData.push({
-                            tema: sesion.tema,
-                            fecha: sesion.fecha,
-                            participacion: participacion || { comentario: "No registrado", fecha: null }
-                        });
-                    }
-                }
+            asistenciasData.push({
+              tema: sesion.tema,
+              fecha: sesion.fecha,
+              asistencia: asistencia || { estado: "No registrado", hora: null },
+            });
 
-                setAsistencias(asistenciasData);
-                setParticipaciones(participacionesData);
-                setEstadisticas({ total: totalSesiones, presente: sesionesPresentes });
-        } catch (error) {
-            console.error("Error fetching asistencias y participaciones", error);
+            participacionesData.push({
+              tema: sesion.tema,
+              fecha: sesion.fecha,
+              participacion: participacion || {
+                comentario: "No registrado",
+                fecha: null,
+              },
+            });
+          }
         }
+
+        setAsistencias(asistenciasData);
+        setParticipaciones(participacionesData);
+        setEstadisticas({ total: totalSesiones, presente: sesionesPresentes });
+        setEstadisticasParticipacion({
+          total: totalSesiones,
+          participo: sesionesParticipo,
+        });
+      } catch (error) {
+        console.error("Error fetching asistencias y participaciones", error);
+      }
     };
 
     if (curso && loggedInUser) {
-        fetchAsistencias();
+      fetchAsistencias();
     }
-}, [curso, loggedInUser]);
+  }, [curso, loggedInUser]);
 
-const formatDate = (dateString) => {
+  const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
     return date.toLocaleDateString();
-};
+  };
 
-const formatTime = (dateString) => {
+  const formatTime = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-};
+    return date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
 
-const data = {
-    labels: ['Presente', 'Ausente'],
+  const data = {
+    labels: ["Presente", "Ausente"],
     datasets: [
-        {
-            data: [estadisticas.presente, estadisticas.total - estadisticas.presente],
-            backgroundColor: ['#36A2EB', '#FF6384'],
-            hoverBackgroundColor: ['#36A2EB', '#FF6384'],
-        },
+      {
+        data: [
+          estadisticas.presente,
+          estadisticas.total - estadisticas.presente,
+        ],
+        backgroundColor: ["#36A2EB", "#FF6384"],
+        hoverBackgroundColor: ["#36A2EB", "#FF6384"],
+      },
     ],
-};
+  };
+
+  const dataParticipacion = {
+    labels: ["Participó", "No participó"],
+    datasets: [
+      {
+        data: [
+          estadisticasParticipacion.participo,
+          estadisticasParticipacion.total - estadisticasParticipacion.participo,
+        ],
+        backgroundColor: ["#4BC0C0", "#FFCE56"],
+        hoverBackgroundColor: ["#4BC0C0", "#FFCE56"],
+      },
+    ],
+  };
 
   if (!curso) {
     return <div>Curso no encontrado</div>;
@@ -188,18 +240,45 @@ const data = {
                 <FontAwesomeIcon icon="chevron-right" size="1x" />
                 <h3>General</h3>
               </div>
-              {semanas.map((semanaId, index) => (
-                <div key={semanaId} className="seccion">
-                  <FontAwesomeIcon icon="chevron-right" size="1x" />
-                  <h3>Semana {index + 1}</h3>
-                </div>
-              ))}
+              {/* <Accordion>
+                {semanas.map((semanaId, index) => (
+                  <Card key={semanaId}>
+                    <Card.Header>
+                      <Accordion.Toggle
+                        as={Button}
+                        variant="link"
+                        eventKey={`${index}`}
+                      >
+                        Semana {index + 1}
+                      </Accordion.Toggle>
+                    </Card.Header>
+                    <Accordion.Collapse eventKey={`${index}`}>
+                      <Card.Body>
+                        <ul>
+                          {curso.grupos
+                            .flatMap((grupo) => grupo.sesiones)
+                            .map((sesion, sesionIndex) => (
+                              <li key={sesionIndex}>
+                                {sesion.tema} -{" "}
+                                {new Date(sesion.fecha).toLocaleDateString()}
+                              </li>
+                            ))}
+                        </ul>
+                      </Card.Body>
+                    </Accordion.Collapse>
+                  </Card>
+                ))}
+              </Accordion> */}
             </div>
           </Tab>
           <Tab eventKey="participantes" title="Participantes">
             <div
               className="container-participantes"
-              style={{ width: "1200px",overflowY: "auto", maxHeight: "1000px" }}
+              style={{
+                width: "1200px",
+                overflowY: "auto",
+                maxHeight: "1000px",
+              }}
             >
               <InputGroup className="mb-3">
                 <FormControl
@@ -233,81 +312,122 @@ const data = {
               )}
             </div>
           </Tab>
-          <Tab
-            eventKey="estadisticas"
-            title="Estadísticas"
-          >
-            <div className="container-estadisticas" style={{ width: "600px", margin: "0 auto" }}>
-                            <Pie data={data} />
-                        </div>
+          <Tab eventKey="estadisticas" title="Estadísticas">
+            <Card style={{ width: "600px" }}>
+              <Card.Header>
+                <Card.Title>Asistencias en sesiones</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <Pie data={data} options={{ maintainAspectRatio: false }} />
+              </Card.Body>
+            </Card>
+            <Card style={{ width: "600px", margin: "0 auto" }}>
+              <Card.Header>
+                <Card.Title>Participaciones en sesiones</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <Pie
+                  data={dataParticipacion}
+                  options={{ maintainAspectRatio: false }}
+                />
+              </Card.Body>
+            </Card>
           </Tab>
-            <Tab
-              eventKey="competencias"
-              title="Competencias"
-            ></Tab>
-            <Tab
-              eventKey="asistencias"
-              title="Asistencias"
+          <Tab eventKey="competencias" title="Competencias"></Tab>
+          <Tab eventKey="asistencias" title="Asistencias">
+            <div
+              className="container-asistencias"
+              style={{
+                width: "1200px",
+                overflowY: "auto",
+                maxHeight: "1000px",
+              }}
             >
-                <div className="container-asistencias" style={{ width: "1200px",overflowY: "auto", maxHeight: "1000px" }}>
-                            {asistencias.length === 0 ? (
-                                <div>No hay asistencias registradas</div>
-                            ) : (
-                                <Table striped bordered hover>
-                                    <thead>
-                                        <tr>
-                                            <th>Tema</th>
-                                            <th>Fecha de Sesión</th>
-                                            <th>Estado</th>
-                                            <th>Fecha de Asistencia</th>
-                                            <th>Hora de Asistencia</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {asistencias.map((asistencia, index) => (
-                                            <tr key={index}>
-                                                <td>{asistencia.tema}</td>
-                                                <td>{new Date(asistencia.fecha).toLocaleDateString()}</td>
-                                                <td>{asistencia.asistencia.estado}</td>
-                                                <td>{asistencia.asistencia.hora ? formatDate(asistencia.asistencia.hora) : 'N/A'}</td>
-                                                <td>{asistencia.asistencia.hora ? formatTime(asistencia.asistencia.hora) : 'N/A'}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </Table>
-                            )}
-                        </div>
-            </Tab>
+              {asistencias.length === 0 ? (
+                <div>No hay asistencias registradas</div>
+              ) : (
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>Tema</th>
+                      <th>Fecha de Sesión</th>
+                      <th>Estado</th>
+                      <th>Fecha de Asistencia</th>
+                      <th>Hora de Asistencia</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {asistencias.map((asistencia, index) => (
+                      <tr key={index}>
+                        <td>{asistencia.tema}</td>
+                        <td>
+                          {new Date(asistencia.fecha).toLocaleDateString()}
+                        </td>
+                        <td>{asistencia.asistencia.estado}</td>
+                        <td>
+                          {asistencia.asistencia.hora
+                            ? formatDate(asistencia.asistencia.hora)
+                            : "N/A"}
+                        </td>
+                        <td>
+                          {asistencia.asistencia.hora
+                            ? formatTime(asistencia.asistencia.hora)
+                            : "N/A"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+            </div>
+          </Tab>
           <Tab eventKey="participaciones" title="Participaciones">
-                        <div className="container-participaciones" style={{width: "1200px",overflowY: "auto", maxHeight: "1000px" }}>
-                            {participaciones.length === 0 ? (
-                                <div>No hay participaciones registradas</div>
-                            ) : (
-                                <Table striped bordered hover>
-                                    <thead>
-                                        <tr>
-                                            <th>Tema</th>
-                                            <th>Fecha de Sesión</th>
-                                            <th>Comentario</th>
-                                            <th>Fecha de Participación</th>
-                                            <th>Hora de Participación</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {participaciones.map((participacion, index) => (
-                                            <tr key={index}>
-                                                <td>{participacion.tema}</td>
-                                                <td>{new Date(participacion.fecha).toLocaleDateString()}</td>
-                                                <td>{participacion.participacion.comentario}</td>
-                                                <td>{participacion.participacion.fecha ? formatDate(participacion.participacion.fecha) : 'N/A'}</td>
-                                                <td>{participacion.participacion.fecha ? formatTime(participacion.participacion.fecha) : 'N/A'}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </Table>
-                            )}
-                        </div>
-                    </Tab>
+            <div
+              className="container-participaciones"
+              style={{
+                width: "1200px",
+                overflowY: "auto",
+                maxHeight: "1000px",
+              }}
+            >
+              {participaciones.length === 0 ? (
+                <div>No hay participaciones registradas</div>
+              ) : (
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>Tema</th>
+                      <th>Fecha de Sesión</th>
+                      <th>Comentario</th>
+                      <th>Fecha de Participación</th>
+                      <th>Hora de Participación</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {participaciones.map((participacion, index) => (
+                      <tr key={index}>
+                        <td>{participacion.tema}</td>
+                        <td>
+                          {new Date(participacion.fecha).toLocaleDateString()}
+                        </td>
+                        <td>{participacion.participacion.comentario}</td>
+                        <td>
+                          {participacion.participacion.fecha
+                            ? formatDate(participacion.participacion.fecha)
+                            : "N/A"}
+                        </td>
+                        <td>
+                          {participacion.participacion.fecha
+                            ? formatTime(participacion.participacion.fecha)
+                            : "N/A"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+            </div>
+          </Tab>
         </Tabs>
       </div>
     </>
