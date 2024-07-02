@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
-import { Table, FormControl, InputGroup } from "react-bootstrap";
+import {
+  Table,
+  FormControl,
+  InputGroup,
+  Accordion,
+  Card,
+  Button,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
@@ -44,6 +51,10 @@ const Curso = () => {
   const [asistencias, setAsistencias] = useState([]);
   const [participaciones, setParticipaciones] = useState([]);
   const [estadisticas, setEstadisticas] = useState({ total: 0, presente: 0 });
+  const [estadisticasParticipacion, setEstadisticasParticipacion] = useState({
+    total: 0,
+    participo: 0,
+  });
 
   useEffect(() => {
     if (curso) {
@@ -142,6 +153,10 @@ const Curso = () => {
         setAsistencias(asistenciasData);
         setParticipaciones(participacionesData);
         setEstadisticas({ total: totalSesiones, presente: sesionesPresentes, falta: sesionesFalta, tardanza: sesionesTardanzas, justificado: sesionesJustificados });
+        setEstadisticasParticipacion({
+          total: totalSesiones,
+          participo: sesionesParticipo,
+        });
       } catch (error) {
         console.error("Error fetching asistencias y participaciones", error);
       }
@@ -161,16 +176,30 @@ const Curso = () => {
   const formatTime = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  };
+return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+};
 
-  const data = {
-    labels: ['Presente', 'Falta', 'Justificado', 'Tardanza', 'No iniciada'],
+const data = {
+  labels: ['Presente', 'Falta', 'Justificado', 'Tardanza', 'No iniciada'],
+  datasets: [
+    {
+      data: [estadisticas.presente, estadisticas.falta, estadisticas.tardanza, estadisticas.justificado],
+      backgroundColor: ['#36A2EB', '#FF6384', '#F23400', '#F27300', '#C9C9C9'],
+      hoverBackgroundColor: ['#36A2EB', '#FF6384', '#BF2900', '#D02D00', '#A9A9A9'],
+    },
+  ],
+};
+
+  const dataParticipacion = {
+    labels: ["Participó", "No participó"],
     datasets: [
       {
-        data: [estadisticas.presente, estadisticas.falta, estadisticas.tardanza, estadisticas.justificado, estadisticas.total - estadisticas.presente],
-        backgroundColor: ['#36A2EB', '#FF6384', '#F23400', '#F27300', '#C9C9C9'],
-        hoverBackgroundColor: ['#36A2EB', '#FF6384', '#BF2900', '#D02D00', '#A9A9A9'],
+        data: [
+          estadisticasParticipacion.participo,
+          estadisticasParticipacion.total - estadisticasParticipacion.participo,
+        ],
+        backgroundColor: ["#4BC0C0", "#FFCE56"],
+        hoverBackgroundColor: ["#4BC0C0", "#FFCE56"],
       },
     ],
   };
@@ -203,12 +232,35 @@ const Curso = () => {
                 <FontAwesomeIcon icon="chevron-right" size="1x" />
                 <h3>General</h3>
               </div>
-              {semanas.map((semanaId, index) => (
-                <div key={semanaId} className="seccion">
-                  <FontAwesomeIcon icon="chevron-right" size="1x" />
-                  <h3>Semana {index + 1}</h3>
-                </div>
-              ))}
+              {/* <Accordion>
+                {semanas.map((semanaId, index) => (
+                  <Card key={semanaId}>
+                    <Card.Header>
+                      <Accordion.Toggle
+                        as={Button}
+                        variant="link"
+                        eventKey={`${index}`}
+                      >
+                        Semana {index + 1}
+                      </Accordion.Toggle>
+                    </Card.Header>
+                    <Accordion.Collapse eventKey={`${index}`}>
+                      <Card.Body>
+                        <ul>
+                          {curso.grupos
+                            .flatMap((grupo) => grupo.sesiones)
+                            .map((sesion, sesionIndex) => (
+                              <li key={sesionIndex}>
+                                {sesion.tema} -{" "}
+                                {new Date(sesion.fecha).toLocaleDateString()}
+                              </li>
+                            ))}
+                        </ul>
+                      </Card.Body>
+                    </Accordion.Collapse>
+                  </Card>
+                ))}
+              </Accordion> */}
             </div>
           </Tab>
           <Tab eventKey="participantes" title="Participantes">
