@@ -24,5 +24,7 @@ app.use('/api/cursos', require('./routes/cursos'));
 //ruta para nuestra api de sesiones
 app.use('/api/sesiones', require('./routes/sesiones'));
 
+app.use('/api/semanas', require('./routes/semanas'));
+
 main(); 
 //ejecutamos la funcion asincrona de arriba 
