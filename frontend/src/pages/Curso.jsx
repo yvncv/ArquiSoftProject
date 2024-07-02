@@ -108,6 +108,9 @@ const Curso = () => {
         let sesionesData = [];
         let totalSesiones = 0;
         let sesionesPresentes = 0;
+        let sesionesFalta = 0;
+        let sesionesTardanzas = 0;
+        let sesionesJustificados = 0;
         let sesionesParticipo = 0;
 
         for (const semana of semanasData) {
@@ -130,14 +133,22 @@ const Curso = () => {
               sesionesPresentes++;
             }
 
-            if (participacion?.comentario) {
-              sesionesParticipo++;
+            if (asistencia?.estado === "falta") {
+              sesionesFalta++;
+            }
+
+            if (asistencia?.estado === "tardanza") {
+              sesionesTardanzas++;
+            }
+            
+            if (asistencia?.estado === "justificado") {
+              sesionesJustificados++;
             }
 
             asistenciasData.push({
               tema: sesion.tema,
               fecha: sesion.fecha,
-              asistencia: asistencia || { estado: "No registrado", hora: null },
+              asistencia: asistencia || { estado: "No registrado", hora: null }
             });
 
             participacionesData.push({
@@ -153,7 +164,7 @@ const Curso = () => {
 
         setAsistencias(asistenciasData);
         setParticipaciones(participacionesData);
-        setEstadisticas({ total: totalSesiones, presente: sesionesPresentes });
+        setEstadisticas({ total: totalSesiones, presente: sesionesPresentes, falta: sesionesFalta, tardanza: sesionesTardanzas, justificado: sesionesJustificados });
         setEstadisticasParticipacion({
           total: totalSesiones,
           participo: sesionesParticipo,
@@ -185,15 +196,12 @@ const Curso = () => {
   };
 
   const data = {
-    labels: ["Presente", "Ausente"],
+    labels: ['Presente', 'Falta', 'Justificado', 'Tardanza', 'No iniciada'],
     datasets: [
       {
-        data: [
-          estadisticas.presente,
-          estadisticas.total - estadisticas.presente,
-        ],
-        backgroundColor: ["#36A2EB", "#FF6384"],
-        hoverBackgroundColor: ["#36A2EB", "#FF6384"],
+        data: [estadisticas.presente, estadisticas.falta, estadisticas.tardanza, estadisticas.justificado, estadisticas.total - estadisticas.presente],
+        backgroundColor: ['#36A2EB', '#FF6384', '#F23400', '#F27300', '#C9C9C9'],
+        hoverBackgroundColor: ['#36A2EB', '#FF6384', '#BF2900', '#D02D00', '#A9A9A9'],
       },
     ],
   };
