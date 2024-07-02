@@ -30,7 +30,10 @@ function GestionarSesion() {
           })
         );
 
-        setSesion({ ...sesionData, participantes: participantesActualizados });
+        // Filtrar solo participantes cuyo rol sea "alumno"
+        const alumnos = participantesActualizados.filter(participante => participante.participante.role === 'alumno');
+
+        setSesion({ ...sesionData, participantes: alumnos });
       } catch (error) {
         console.error('Error fetching session:', error);
       }

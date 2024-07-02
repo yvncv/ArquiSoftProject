@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 import {
   Table,
   FormControl,
   InputGroup,
   Accordion,
-  Card,
-  Button,
+  Tab,
+  Tabs,
 } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Tabs from "react-bootstrap/Tabs";
-import Tab from "react-bootstrap/Tab";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import {
@@ -40,14 +37,15 @@ ChartJS.register(
 );
 
 const Curso = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { curso } = location.state || {};
   const loggedInUser = useContext(AuthContext);
+  const usuario = loggedInUser;
   const [key, setKey] = useState("home");
   const [participantes, setParticipantes] = useState([]);
   const [filteredParticipantes, setFilteredParticipantes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const usuario = loggedInUser;
   const [asistencias, setAsistencias] = useState([]);
   const [participaciones, setParticipaciones] = useState([]);
   const [estadisticas, setEstadisticas] = useState({ total: 0, presente: 0 });
@@ -55,6 +53,7 @@ const Curso = () => {
     total: 0,
     participo: 0,
   });
+  const [semanas, setSemanas] = useState([]);
 
   useEffect(() => {
     if (curso) {
@@ -103,9 +102,21 @@ const Curso = () => {
         const semanasResponses = await Promise.all(semanasPromises);
         const semanasData = semanasResponses.map((response) => response.data);
 
+        // Obtener las sesiones para cada semana
+        const sesionesPromises = semanasData.map(async (semana) => {
+          const sesiones = await Promise.all(
+            semana.sesiones.map((sesionId) =>
+              axios.get(`http://localhost:8080/api/sesiones/${sesionId}`)
+            )
+          );
+          return { ...semana, sesiones: sesiones.map((s) => s.data) };
+        });
+
+        const semanasConSesiones = await Promise.all(sesionesPromises);
+        setSemanas(semanasConSesiones);
+
         let asistenciasData = [];
         let participacionesData = [];
-        let sesionesData = [];
         let totalSesiones = 0;
         let sesionesPresentes = 0;
         let sesionesFalta = 0;
@@ -113,42 +124,31 @@ const Curso = () => {
         let sesionesJustificados = 0;
         let sesionesParticipo = 0;
 
-        for (const semana of semanasData) {
-          for (const sesionId of semana.sesiones) {
+        for (const semana of semanasConSesiones) {
+          for (const sesion of semana.sesiones) {
             totalSesiones++;
-            const sesionResponse = await axios.get(
-              `http://localhost:8080/api/sesiones/${sesionId}`
-            );
-            const sesion = sesionResponse.data;
-            sesionesData.push(sesion);
 
             const asistencia = sesion.participantes.find(
-              (p) => p.participante === usuario.loggedInUser.id
+              (p) => p.participante === usuario.id
             )?.asistencia;
             const participacion = sesion.participantes.find(
-              (p) => p.participante === usuario.loggedInUser.id
+              (p) => p.participante === usuario.id
             )?.participacion;
 
             if (asistencia?.estado === "presente") {
               sesionesPresentes++;
-            }
-
-            if (asistencia?.estado === "falta") {
+            } else if (asistencia?.estado === "falta") {
               sesionesFalta++;
-            }
-
-            if (asistencia?.estado === "tardanza") {
+            } else if (asistencia?.estado === "tardanza") {
               sesionesTardanzas++;
-            }
-            
-            if (asistencia?.estado === "justificado") {
+            } else if (asistencia?.estado === "justificado") {
               sesionesJustificados++;
             }
 
             asistenciasData.push({
               tema: sesion.tema,
               fecha: sesion.fecha,
-              asistencia: asistencia || { estado: "No registrado", hora: null }
+              asistencia: asistencia || { estado: "No registrado", hora: null },
             });
 
             participacionesData.push({
@@ -164,7 +164,13 @@ const Curso = () => {
 
         setAsistencias(asistenciasData);
         setParticipaciones(participacionesData);
-        setEstadisticas({ total: totalSesiones, presente: sesionesPresentes, falta: sesionesFalta, tardanza: sesionesTardanzas, justificado: sesionesJustificados });
+        setEstadisticas({
+          total: totalSesiones,
+          presente: sesionesPresentes,
+          falta: sesionesFalta,
+          tardanza: sesionesTardanzas,
+          justificado: sesionesJustificados,
+        });
         setEstadisticasParticipacion({
           total: totalSesiones,
           participo: sesionesParticipo,
@@ -174,10 +180,10 @@ const Curso = () => {
       }
     };
 
-    if (curso && loggedInUser) {
+    if (curso && usuario) {
       fetchAsistencias();
     }
-  }, [curso, loggedInUser]);
+  }, [curso, usuario]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -195,13 +201,40 @@ const Curso = () => {
     });
   };
 
+  const handleSessionClick = (sessionId) => {
+    if (sessionId) {
+      navigate(`/asistencia/${sessionId}`);
+    } else {
+      console.error("Session ID is undefined or null.");
+      // Puedes manejar el error aquí, por ejemplo, mostrando un mensaje al usuario.
+    }
+  };
+
   const data = {
-    labels: ['Presente', 'Falta', 'Justificado', 'Tardanza', 'No iniciada'],
+    labels: ["Presente", "Falta", "Justificado", "Tardanza", "No iniciada"],
     datasets: [
       {
-        data: [estadisticas.presente, estadisticas.falta, estadisticas.tardanza, estadisticas.justificado, estadisticas.total - estadisticas.presente],
-        backgroundColor: ['#36A2EB', '#FF6384', '#F23400', '#F27300', '#C9C9C9'],
-        hoverBackgroundColor: ['#36A2EB', '#FF6384', '#BF2900', '#D02D00', '#A9A9A9'],
+        data: [
+          estadisticas.presente,
+          estadisticas.falta,
+          estadisticas.tardanza,
+          estadisticas.justificado,
+          estadisticas.total - estadisticas.presente,
+        ],
+        backgroundColor: [
+          "#36A2EB",
+          "#FF6384",
+          "#F23400",
+          "#F27300",
+          "#C9C9C9",
+        ],
+        hoverBackgroundColor: [
+          "#36A2EB",
+          "#FF6384",
+          "#BF2900",
+          "#D02D00",
+          "#A9A9A9",
+        ],
       },
     ],
   };
@@ -224,13 +257,6 @@ const Curso = () => {
     return <div>Curso no encontrado</div>;
   }
 
-  const semanas = [];
-  curso.grupos.forEach((grupo) => {
-    grupo.semanas.forEach((semanaId) => {
-      semanas.push(semanaId);
-    });
-  });
-
   return (
     <>
       <div className="container-curso-seleccionado-total">
@@ -239,35 +265,33 @@ const Curso = () => {
         </div>
         <Tabs
           className="container-curso-seleccionado opciones-curso mb-3"
-          defaultActiveKey="curso"
+          defaultActiveKey="home"
           id="uncontrolled-tab-example"
         >
-          <Tab eventKey="curso" title="Curso" style={{ height: "fit-content" }}>
+          <Tab eventKey="home" title="Home" style={{ height: "fit-content" }}>
             <div className="container-curso-seleccionado">
               <Accordion defaultActiveKey="0">
-                <Accordion.Item eventKey={0}>
+                <Accordion.Item eventKey="0">
                   <Accordion.Header>General</Accordion.Header>
                 </Accordion.Item>
-                {console.log(semanas)}
                 {semanas.length > 0 ? (
                   semanas.map((semana, index) => (
-                    <Accordion.Item eventKey={`${index}`} key={semana._id}>
+                    <Accordion.Item key={index} eventKey={`${index}`}>
                       <Accordion.Header>Semana {index + 1}</Accordion.Header>
                       <Accordion.Body>
                         <ul>
                           {semana.sesiones.length > 0 ? (
-                            semana.sesiones.map((sesion, sesionIndex) =>
-                              sesion && sesion.tema ? (
-                                <li key={sesionIndex}>
-                                  {sesion.tema} -{" "}
-                                  {new Date(sesion.fecha).toLocaleDateString()}
-                                </li>
-                              ) : (
-                                <li key={sesionIndex}>Sesión no disponible</li>
-                              )
-                            )
+                            semana.sesiones.map((sesion, idx) => (
+                              <li key={idx}>
+                                <button
+                                  onClick={() => handleSessionClick(sesion._id)}
+                                >
+                                  {sesion.tema}
+                                </button>
+                              </li>
+                            ))
                           ) : (
-                            <li>No hay sesiones disponibles</li>
+                            <li>Sin sesiones</li>
                           )}
                         </ul>
                       </Accordion.Body>
@@ -279,161 +303,97 @@ const Curso = () => {
               </Accordion>
             </div>
           </Tab>
-          <Tab eventKey="participantes" title="Participantes">
-            <div
-              className="container-participantes"
-              style={{
-                width: "1200px",
-                overflowY: "auto",
-                maxHeight: "1000px",
-              }}
-            >
+          <Tab
+            eventKey="participantes"
+            title="Participantes"
+            style={{ height: "fit-content" }}
+          >
+            <div className="container-curso-seleccionado">
               <InputGroup className="mb-3">
                 <FormControl
-                  placeholder="Buscar por nombre o código"
-                  aria-label="Buscar"
-                  aria-describedby="basic-addon1"
+                  placeholder="Buscar Participante"
+                  value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </InputGroup>
-              {filteredParticipantes.length === 0 ? (
-                <div>No hay participantes en este curso</div>
-              ) : (
-                <Table striped bordered hover>
-                  <thead>
-                    <tr>
-                      <th>Codigo</th>
-                      <th>Nombre</th>
-                      <th>Rol</th>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredParticipantes.map((participante) => (
+                    <tr key={participante.id}>
+                      <td>{participante.codigo}</td>
+                      <td>{participante.nombre}</td>
+                      <td>{participante.role}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filteredParticipantes.map((participante) => (
-                      <tr key={participante._id}>
-                        <td>{participante.codigo}</td>
-                        <td>{participante.nombre}</td>
-                        <td>{participante.role}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              )}
+                  ))}
+                </tbody>
+              </Table>
             </div>
           </Tab>
-          <Tab eventKey="estadisticas" title="Estadísticas">
-            <Card style={{ width: "600px" }}>
-              <Card.Header>
-                <Card.Title>Asistencias en sesiones</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <Pie data={data} options={{ maintainAspectRatio: false }} />
-              </Card.Body>
-            </Card>
-            <Card style={{ width: "600px", margin: "0 auto" }}>
-              <Card.Header>
-                <Card.Title>Participaciones en sesiones</Card.Title>
-              </Card.Header>
-              <Card.Body>
-                <Pie
-                  data={dataParticipacion}
-                  options={{ maintainAspectRatio: false }}
-                />
-              </Card.Body>
-            </Card>
-          </Tab>
-          <Tab eventKey="competencias" title="Competencias"></Tab>
-          <Tab eventKey="asistencias" title="Asistencias">
-            <div
-              className="container-asistencias"
-              style={{
-                width: "1200px",
-                overflowY: "auto",
-                maxHeight: "1000px",
-              }}
-            >
-              {asistencias.length === 0 ? (
-                <div>No hay asistencias registradas</div>
-              ) : (
-                <Table striped bordered hover>
-                  <thead>
-                    <tr>
-                      <th>Tema</th>
-                      <th>Fecha de Sesión</th>
-                      <th>Estado</th>
-                      <th>Fecha de Asistencia</th>
-                      <th>Hora de Asistencia</th>
+          <Tab
+            eventKey="asistencias"
+            title="Asistencia"
+            style={{ height: "fit-content" }}
+          >
+            <div className="container-curso-seleccionado">
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Tema</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Hora</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {asistencias.map((asistencia, index) => (
+                    <tr key={index}>
+                      <td>{asistencia.tema}</td>
+                      <td>{formatDate(asistencia.fecha)}</td>
+                      <td>{asistencia.asistencia.estado}</td>
+                      <td>{formatTime(asistencia.asistencia.hora)}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {asistencias.map((asistencia, index) => (
-                      <tr key={index}>
-                        <td>{asistencia.tema}</td>
-                        <td>
-                          {new Date(asistencia.fecha).toLocaleDateString()}
-                        </td>
-                        <td>{asistencia.asistencia.estado}</td>
-                        <td>
-                          {asistencia.asistencia.hora
-                            ? formatDate(asistencia.asistencia.hora)
-                            : "N/A"}
-                        </td>
-                        <td>
-                          {asistencia.asistencia.hora
-                            ? formatTime(asistencia.asistencia.hora)
-                            : "N/A"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              )}
+                  ))}
+                </tbody>
+              </Table>
+              <div className="container-chart">
+                <Pie data={data} />
+              </div>
             </div>
           </Tab>
-          <Tab eventKey="participaciones" title="Participaciones">
-            <div
-              className="container-participaciones"
-              style={{
-                width: "1200px",
-                overflowY: "auto",
-                maxHeight: "1000px",
-              }}
-            >
-              {participaciones.length === 0 ? (
-                <div>No hay participaciones registradas</div>
-              ) : (
-                <Table striped bordered hover>
-                  <thead>
-                    <tr>
-                      <th>Tema</th>
-                      <th>Fecha de Sesión</th>
-                      <th>Comentario</th>
-                      <th>Fecha de Participación</th>
-                      <th>Hora de Participación</th>
+          <Tab
+            eventKey="participaciones"
+            title="Participación"
+            style={{ height: "fit-content" }}
+          >
+            <div className="container-curso-seleccionado">
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>Tema</th>
+                    <th>Fecha</th>
+                    <th>Comentario</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {participaciones.map((participacion, index) => (
+                    <tr key={index}>
+                      <td>{participacion.tema}</td>
+                      <td>{formatDate(participacion.fecha)}</td>
+                      <td>{participacion.participacion.comentario}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {participaciones.map((participacion, index) => (
-                      <tr key={index}>
-                        <td>{participacion.tema}</td>
-                        <td>
-                          {new Date(participacion.fecha).toLocaleDateString()}
-                        </td>
-                        <td>{participacion.participacion.comentario}</td>
-                        <td>
-                          {participacion.participacion.fecha
-                            ? formatDate(participacion.participacion.fecha)
-                            : "N/A"}
-                        </td>
-                        <td>
-                          {participacion.participacion.fecha
-                            ? formatTime(participacion.participacion.fecha)
-                            : "N/A"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              )}
+                  ))}
+                </tbody>
+              </Table>
+              <div className="container-chart">
+                <Pie data={dataParticipacion} />
+              </div>
             </div>
           </Tab>
         </Tabs>
