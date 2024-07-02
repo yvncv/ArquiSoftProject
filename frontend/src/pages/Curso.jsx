@@ -320,21 +320,21 @@ const Curso = () => {
               )}
             </div>
           </Tab>
-          <Tab eventKey="estadisticas" title="Estadísticas">
-            <Card style={{ width: "600px" }}>
+          <Tab eventKey="estadisticas" title="Estadísticas" className="d-flex">
+            <Card>
               <Card.Header>
                 <Card.Title>Asistencias en sesiones</Card.Title>
               </Card.Header>
               <Card.Body>
-                <Pie data={data} options={{ maintainAspectRatio: false }} />
+                <Pie  style={{ height: "600px" }} data={data} options={{ maintainAspectRatio: false }} />
               </Card.Body>
             </Card>
-            <Card style={{ width: "600px", margin: "0 auto" }}>
+            <Card>
               <Card.Header>
                 <Card.Title>Participaciones en sesiones</Card.Title>
               </Card.Header>
               <Card.Body>
-                <Pie
+                <Pie style={{ height: "600px" }}
                   data={dataParticipacion}
                   options={{ maintainAspectRatio: false }}
                 />
