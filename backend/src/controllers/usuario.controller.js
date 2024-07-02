@@ -179,6 +179,20 @@ usuarioCtrl.usuarioLogueado = async (req, res) => {
     }
 };
 
+usuarioCtrl.getParticipantes = async (req, res) => {
+    try {
+        const ids = req.query.ids.split(",");
+        // Verificar si todos los ids son válidos
+        if (!ids.every(id => mongoose.Types.ObjectId.isValid(id))) {
+            return res.status(400).json({ message: 'ID inválido' });
+        }
+        const participantes = await Usuario.find({ _id: { $in: ids } });
+        res.json(participantes);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching participantes', error });
+    }
+};
+
 usuarioCtrl.cerrarSesion = async (req, res) => {
     res.status(200).json({ message: 'Sesión cerrada correctamente' });
 };

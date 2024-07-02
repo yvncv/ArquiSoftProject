@@ -12,6 +12,8 @@ router.route('/:id')
     .delete(usuarioCtrl.deleteUsuario) // Verificar que usuarioCtrl.deleteUsuario no es undefined
     .put(usuarioCtrl.updateUsuario); // Verificar que usuarioCtrl.updateUsuario no es undefined
 
+router.get('/getParticipantes', usuarioCtrl.getParticipantes);
+
 // Ruta de inicio de sesión
 router.post('/login', usuarioCtrl.iniciarSesion);
 
