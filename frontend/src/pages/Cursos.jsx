@@ -35,13 +35,10 @@ const Cursos = () => {
     const fetchCursos = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/cursos");
-        console.log(response.data);
         if (usuario) {
-          console.log("Hola")
           const cursosFiltrados = response.data.filter(curso =>
             curso.grupos.some(grupo => grupo.participantes.includes(usuario.id))
           );
-          console.log(usuario._id);
           setCursos(cursosFiltrados);
         } else {
           setCursos([]);
