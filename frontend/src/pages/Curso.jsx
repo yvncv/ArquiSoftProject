@@ -24,8 +24,8 @@ import {
   PointElement,
   LineElement,
   Title,
-  RadialLinearScale
-} from 'chart.js';
+  RadialLinearScale,
+} from "chart.js";
 
 ChartJS.register(
   ArcElement,
@@ -96,10 +96,12 @@ const Curso = () => {
   useEffect(() => {
     const fetchAsistencias = async () => {
       try {
-        const semanasIds = curso.grupos.flatMap(grupo => grupo.semanas);
-        const semanasPromises = semanasIds.map(id => axios.get(`http://localhost:8080/api/semanas/${id}`));
+        const semanasIds = curso.grupos.flatMap((grupo) => grupo.semanas);
+        const semanasPromises = semanasIds.map((id) =>
+          axios.get(`http://localhost:8080/api/semanas/${id}`)
+        );
         const semanasResponses = await Promise.all(semanasPromises);
-        const semanasData = semanasResponses.map(response => response.data);
+        const semanasData = semanasResponses.map((response) => response.data);
 
         let asistenciasData = [];
         let participacionesData = [];
@@ -109,16 +111,23 @@ const Curso = () => {
         let sesionesFalta = 0;
         let sesionesTardanzas = 0;
         let sesionesJustificados = 0;
+        let sesionesParticipo = 0;
 
         for (const semana of semanasData) {
           for (const sesionId of semana.sesiones) {
             totalSesiones++;
-            const sesionResponse = await axios.get(`http://localhost:8080/api/sesiones/${sesionId}`);
+            const sesionResponse = await axios.get(
+              `http://localhost:8080/api/sesiones/${sesionId}`
+            );
             const sesion = sesionResponse.data;
             sesionesData.push(sesion);
 
-            const asistencia = sesion.participantes.find(p => p.participante === usuario.loggedInUser.id)?.asistencia;
-            const participacion = sesion.participantes.find(p => p.participante === usuario.loggedInUser.id)?.participacion;
+            const asistencia = sesion.participantes.find(
+              (p) => p.participante === usuario.loggedInUser.id
+            )?.asistencia;
+            const participacion = sesion.participantes.find(
+              (p) => p.participante === usuario.loggedInUser.id
+            )?.participacion;
 
             if (asistencia?.estado === "presente") {
               sesionesPresentes++;
@@ -145,7 +154,10 @@ const Curso = () => {
             participacionesData.push({
               tema: sesion.tema,
               fecha: sesion.fecha,
-              participacion: participacion || { comentario: "No registrado", fecha: null }
+              participacion: participacion || {
+                comentario: "No registrado",
+                fecha: null,
+              },
             });
           }
         }
@@ -176,19 +188,23 @@ const Curso = () => {
   const formatTime = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
-return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-};
+    return date.toLocaleTimeString("en-GB", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
 
-const data = {
-  labels: ['Presente', 'Falta', 'Justificado', 'Tardanza', 'No iniciada'],
-  datasets: [
-    {
-      data: [estadisticas.presente, estadisticas.falta, estadisticas.tardanza, estadisticas.justificado],
-      backgroundColor: ['#36A2EB', '#FF6384', '#F23400', '#F27300', '#C9C9C9'],
-      hoverBackgroundColor: ['#36A2EB', '#FF6384', '#BF2900', '#D02D00', '#A9A9A9'],
-    },
-  ],
-};
+  const data = {
+    labels: ['Presente', 'Falta', 'Justificado', 'Tardanza', 'No iniciada'],
+    datasets: [
+      {
+        data: [estadisticas.presente, estadisticas.falta, estadisticas.tardanza, estadisticas.justificado, estadisticas.total - estadisticas.presente],
+        backgroundColor: ['#36A2EB', '#FF6384', '#F23400', '#F27300', '#C9C9C9'],
+        hoverBackgroundColor: ['#36A2EB', '#FF6384', '#BF2900', '#D02D00', '#A9A9A9'],
+      },
+    ],
+  };
 
   const dataParticipacion = {
     labels: ["Participó", "No participó"],
@@ -266,7 +282,11 @@ const data = {
           <Tab eventKey="participantes" title="Participantes">
             <div
               className="container-participantes"
-              style={{ width: "1200px", overflowY: "auto", maxHeight: "1000px" }}
+              style={{
+                width: "1200px",
+                overflowY: "auto",
+                maxHeight: "1000px",
+              }}
             >
               <InputGroup className="mb-3">
                 <FormControl
@@ -300,23 +320,37 @@ const data = {
               )}
             </div>
           </Tab>
-          <Tab
-            eventKey="estadisticas"
-            title="Estadísticas"
-          >
-            <div className="container-estadisticas" style={{ width: "600px", margin: "0 auto" }}>
-              <Pie data={data} />
-            </div>
+          <Tab eventKey="estadisticas" title="Estadísticas">
+            <Card style={{ width: "600px" }}>
+              <Card.Header>
+                <Card.Title>Asistencias en sesiones</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <Pie data={data} options={{ maintainAspectRatio: false }} />
+              </Card.Body>
+            </Card>
+            <Card style={{ width: "600px", margin: "0 auto" }}>
+              <Card.Header>
+                <Card.Title>Participaciones en sesiones</Card.Title>
+              </Card.Header>
+              <Card.Body>
+                <Pie
+                  data={dataParticipacion}
+                  options={{ maintainAspectRatio: false }}
+                />
+              </Card.Body>
+            </Card>
           </Tab>
-          <Tab
-            eventKey="competencias"
-            title="Competencias"
-          ></Tab>
-          <Tab
-            eventKey="asistencias"
-            title="Asistencias"
-          >
-            <div className="container-asistencias" style={{ width: "1200px", overflowY: "auto", maxHeight: "1000px" }}>
+          <Tab eventKey="competencias" title="Competencias"></Tab>
+          <Tab eventKey="asistencias" title="Asistencias">
+            <div
+              className="container-asistencias"
+              style={{
+                width: "1200px",
+                overflowY: "auto",
+                maxHeight: "1000px",
+              }}
+            >
               {asistencias.length === 0 ? (
                 <div>No hay asistencias registradas</div>
               ) : (
@@ -334,10 +368,20 @@ const data = {
                     {asistencias.map((asistencia, index) => (
                       <tr key={index}>
                         <td>{asistencia.tema}</td>
-                        <td>{new Date(asistencia.fecha).toLocaleDateString()}</td>
+                        <td>
+                          {new Date(asistencia.fecha).toLocaleDateString()}
+                        </td>
                         <td>{asistencia.asistencia.estado}</td>
-                        <td>{asistencia.asistencia.hora ? formatDate(asistencia.asistencia.hora) : 'N/A'}</td>
-                        <td>{asistencia.asistencia.hora ? formatTime(asistencia.asistencia.hora) : 'N/A'}</td>
+                        <td>
+                          {asistencia.asistencia.hora
+                            ? formatDate(asistencia.asistencia.hora)
+                            : "N/A"}
+                        </td>
+                        <td>
+                          {asistencia.asistencia.hora
+                            ? formatTime(asistencia.asistencia.hora)
+                            : "N/A"}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -346,7 +390,14 @@ const data = {
             </div>
           </Tab>
           <Tab eventKey="participaciones" title="Participaciones">
-            <div className="container-participaciones" style={{ width: "1200px", overflowY: "auto", maxHeight: "1000px" }}>
+            <div
+              className="container-participaciones"
+              style={{
+                width: "1200px",
+                overflowY: "auto",
+                maxHeight: "1000px",
+              }}
+            >
               {participaciones.length === 0 ? (
                 <div>No hay participaciones registradas</div>
               ) : (
@@ -364,10 +415,20 @@ const data = {
                     {participaciones.map((participacion, index) => (
                       <tr key={index}>
                         <td>{participacion.tema}</td>
-                        <td>{new Date(participacion.fecha).toLocaleDateString()}</td>
+                        <td>
+                          {new Date(participacion.fecha).toLocaleDateString()}
+                        </td>
                         <td>{participacion.participacion.comentario}</td>
-                        <td>{participacion.participacion.fecha ? formatDate(participacion.participacion.fecha) : 'N/A'}</td>
-                        <td>{participacion.participacion.fecha ? formatTime(participacion.participacion.fecha) : 'N/A'}</td>
+                        <td>
+                          {participacion.participacion.fecha
+                            ? formatDate(participacion.participacion.fecha)
+                            : "N/A"}
+                        </td>
+                        <td>
+                          {participacion.participacion.fecha
+                            ? formatTime(participacion.participacion.fecha)
+                            : "N/A"}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
