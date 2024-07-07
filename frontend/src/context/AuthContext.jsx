@@ -12,13 +12,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem('loggedInUser');
     if (storedUser) {
-      setLoggedInUser(storedUser);
+      setLoggedInUser(JSON.parse(storedUser));
     }
   }, []);
 
   // Función para iniciar sesión
   const login = (usuario) => {
-    localStorage.setItem('loggedInUser', usuario);
+    localStorage.setItem('loggedInUser', JSON.stringify(usuario));
     setLoggedInUser(usuario);
   };
 

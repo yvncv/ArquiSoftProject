@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col } from "react-bootstrap";
+import { Card, Row, Col, Accordion } from "react-bootstrap";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const Cursos = () => {
-  const [error, setError] = useState("");
   const [cursos, setCursos] = useState([]);
   const [usuario, setUsuario] = useState(null); // Estado local para el usuario
+  const navigate = useNavigate(); // Obtener el navigate
 
   useEffect(() => {
     const obtenerUsuario = async () => {
@@ -34,21 +35,31 @@ const Cursos = () => {
     const fetchCursos = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/cursos");
-        console.log(response.data.data);
-        setCursos(response.data.data);
-        console.log(cursos);
+        if (usuario) {
+          const cursosFiltrados = response.data.filter(curso =>
+            curso.grupos.some(grupo => grupo.participantes.includes(usuario.id))
+          );
+          setCursos(cursosFiltrados);
+        } else {
+          setCursos([]);
+        }
       } catch (error) {
-        setError("Error al obtener los cursos");
+        console.log(error);
       }
     };
-
-    fetchCursos();
-  }, []);
+    if (usuario) {
+      fetchCursos();
+    }
+  }, [usuario]);
 
   const formatCarrera = (carrera) => {
     const palabras = carrera.split(" ");
     const primeraPalabra = palabras[0].substring(0, 3).toUpperCase() + ".";
     return `${primeraPalabra} ${palabras.slice(1).join(" ").toUpperCase()}`;
+  };
+
+  const handleCardClick = (curso) => {
+    navigate(`/curso/${curso.nombre}`, { state: { curso } });
   };
 
   return (
@@ -67,7 +78,7 @@ const Cursos = () => {
                   <Card className="mb-3">
                     <Card.Body>
                       <img src="/imagen-curso.svg" alt="" />
-                      <Card.Title>{curso.nombre}</Card.Title>
+                      <Card.Title onClick={() => handleCardClick(curso)}>{curso.nombre}</Card.Title>
                       <Card.Text>
                         {curso.grado.toUpperCase()}/
                         {curso.facultad.toUpperCase()}/

@@ -12,7 +12,7 @@ code {
     monospace;
 }
 
-.container{
+.login{
   background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../public/urp.jpg");
   background-repeat: no-repeat;
   background-size: cover;
@@ -74,6 +74,7 @@ code {
 .container-curso{
   background-color: #fff;
   width:1200px ;
+  margin-bottom: 250px;
 }
 
 .card{
@@ -88,6 +89,7 @@ code {
   font-weight: 400;
   color: #038731;
   text-decoration-line: underline;
+  cursor: pointer;
 }
 
 .card-body img{
@@ -99,4 +101,220 @@ code {
 
 #root{
   background-color: #f7f7f7;
+  height: 100%;
 }
+
+.container-curso-seleccionado-total{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nombre-curso{
+  width: 1200px;
+  margin: 20px;
+}
+
+.container-curso-seleccionado-total h1{
+  font-weight: 700;
+  text-align: left;
+  font-size: 30px;
+}
+
+.container-curso-seleccionado{
+  width: 1200px;
+  background-color: #fff;
+  margin-bottom: 250px;
+}
+
+.opciones-curso{
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.opciones-curso h3{
+  font-size: 16.5px;
+}
+
+.opcion{
+  height: 60px;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.opcion.activo{
+  background-color: #c8e1d3;
+  border-bottom: 3px solid #378E5B;
+  cursor: pointer;
+}
+
+.opcion:hover{
+  background-color: #e9e9e9;
+  border-bottom: 3px solid #363636;
+  cursor: pointer;
+}
+
+.seccion{
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  height: 93px;
+  padding: 20px;
+}
+
+.seccion h3{
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+.footer-cursos{
+  background-color: #1A1C1B;
+  color: #CDCECE;
+  height: 300px;
+  display: flex;
+  justify-content: space-around;
+  padding-top: 30px;
+}
+
+.footer-cursos-texto{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-cursos-iconos{
+  display: flex;
+  gap: 20px;
+}
+
+/* Gestionar Cursos */
+
+.boton-agregar-curso{
+  padding: 20px;
+  width: 100vw;
+  display: flex;
+  justify-content: end;
+}
+
+.boton-agregar-curso .btn{
+  width: 180px;
+  height: 50px;
+  border-radius: 20px;
+  background-color: #038731;
+  border: none;
+}
+
+.contenido-gestionar-curso{
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+}
+
+.buscador-gestionar-curso{
+  padding: 0px 30px 30px 30px;
+}
+
+.buscador-gestionar-curso input{
+  border-radius: 20px;
+}
+
+.tabla-gestionar-cursos{
+  padding: 0px 30px 30px 30px;
+}
+
+.tabla-gestionar-cursos{
+  border-radius: 20px;
+}
+
+.paginacion-gestionar-cursos{
+  display: flex !important;
+  justify-content: end;
+  width: 100vw;
+}
+
+.paginacion-gestionar-cursos ul{
+  padding: 0px 30px 30px 30px;
+}
+
+.paginacion-gestionar-cursos .active span{
+  background-color: #038731 !important;
+  border: none;
+}
+
+/* Crear Curso */
+
+.boton-crear-curso{
+  background-color: #038731 !important;
+  border: none !important;
+}
+
+/* Gestionar Usuarios */
+
+.boton-agregar-usuario {
+  padding: 20px;
+  width: 100vw;
+  display: flex;
+  justify-content: end;
+}
+
+.boton-agregar-usuario .btn {
+  width: 180px;
+  height: 50px;
+  border-radius: 20px;
+  background-color: #038731;
+  border: none;
+}
+
+.contenido-gestionar-usuario {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+}
+
+.buscador-gestionar-usuario {
+  padding: 0px 30px 30px 30px;
+}
+
+.buscador-gestionar-usuario input {
+  border-radius: 20px;
+}
+
+.tabla-gestionar-usuarios {
+  padding: 0px 30px 30px 30px;
+}
+
+.tabla-gestionar-usuarios {
+  border-radius: 20px;
+}
+
+.paginacion-gestionar-usuarios {
+  display: flex !important;
+  justify-content: end;
+  width: 100vw;
+}
+
+.paginacion-gestionar-usuarios ul {
+  padding: 0px 30px 30px 30px;
+}
+
+.paginacion-gestionar-usuarios .active span {
+  background-color: #038731 !important;
+  border: none;
+}
+
+/* Crear Usuario */
+
+.boton-crear-usuario{
+  background-color: #038731 !important;
+  border: none !important;
+}
+
+/* Curso interfaz Usuario */
+
+/* .container-participantes {
+  max-height: 1000px; /* Ajusta este valor según sea necesario
+  width: 1200px;
+  overflow-y: auto;
+} */

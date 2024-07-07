@@ -1,11 +1,21 @@
 const { Schema, model, Types } = require('mongoose');
 
 const sesionSchema = new Schema({
-  codigo: { type: String, required: true, unique: true },
   tema: { type: String, required: true },
-  fecha: { type: Date, required: true },
-  participaciones: [{ type: Types.ObjectId, ref: 'Participacion' }],
-  asistencia: [{ type: Types.ObjectId, ref: 'Asistencia' }],
+  fecha: { type: Date, required: false },
+
+  participantes: [{ 
+    participante: { type: Types.ObjectId, ref:  'Usuario' },
+    asistencia: { 
+      estado: { type: String, required: false },
+      hora: { type: Date, required: false }
+    },
+    participacion: {
+      comentario: { type: String, required: false },
+      fecha: { type: Date, required: false }  
+    }
+  }],
+
 }, {
   versionKey: false,
   timestamps: true,
