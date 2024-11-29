@@ -44,7 +44,7 @@ function VerCursoModal({ show, handleClose, curso }) {
                         <p><strong>Hora:</strong> {h.hora}</p>
                     </div>
                 ))}
-                <p><strong>Participantes:</strong> {grupo.participantes.join(', ')}</p>
+                <p><strong>Participantes:</strong> {grupo.participantes.map((participante) => participante.nombre).join(", ")}</p>
                 {/* Aquí puedes añadir más detalles sobre las sesiones */}
               </div>
             ))}

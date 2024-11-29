@@ -41,13 +41,12 @@ function App() {
             <Route path="/" element={<Cursos />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path='/cursos' element={<Cursos />} />
-            <Route path="/curso/:nombre" element={<Curso />} />
+            <Route path="/curso/:nombre" element={<Curso />} /> {/* Esta es la única ruta para /curso/:nombre */}
             <Route path="/profile" element={<Profile />} />
             <Route path="/agregar_usuario" element={<AgregarUsuario />} />
             <Route path="/agregar_usuario/:id" element={<AgregarUsuario />} />
             <Route path="/gestionar_usuarios" element={<GestionarUsuario />} />
             <Route path="/gestionar_cursos" element={<GestionarCursos />} />
-            <Route path="/curso/:nombre" element={<Curso />} />
             <Route path="/crear_curso" element={<CrearCurso />} />
             <Route path="/asistencia/:id" element={<GestionarSesion />} />
           </Routes>

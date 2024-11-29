@@ -1,50 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import { usuarios, cursos, sesiones, semanas } from '../data';
+import { Table, Button, Form } from 'react-bootstrap';
+import { sesiones, usuarios } from '../data'; // Importa tus datos de sesiones y usuarios
 
 function GestionarSesion() {
-  const [sesion, setSesion] = useState(null);
+  const { id } = useParams(); // Obtén el ID de la sesión desde la URL
+  const [sesion, setSesion] = useState(null); // Estado para la sesión cargada
   const [randomStudent, setRandomStudent] = useState(null); // Estado para el estudiante seleccionado aleatoriamente
-  const { id } = useParams();
 
   useEffect(() => {
-    const fetchSesion = (sesionId) => {
-      try {
-        // Buscar la sesión correspondiente en semanas
-        const semana = semanas.find((semana) =>
-          semana.sesiones.some((sesion) => sesion._id === sesionId)
-        );
-
-        if (semana) {
-          const sesionData = semana.sesiones.find((sesion) => sesion._id === sesionId);
-
-          // Aquí se actualiza los participantes con la información de los usuarios
-          const participantesActualizados = sesionData.participantes.map((participanteId) => {
-            const participanteData = usuarios.find((usuario) => usuario.id === participanteId);
-            return {
-              _id: participanteData.id,
-              nombre: participanteData.nombre,
-              codigo: participanteData.codigo,
-              role: participanteData.role,
-              asistencia: { estado: '', hora: null },
-              participacion: { comentario: '', fecha: null }
-            };
-          });
-
-          setSesion({ ...sesionData, participantes: participantesActualizados });
-        }
-      } catch (error) {
-        console.error('Error fetching session:', error);
-      }
+    const fetchSesion = (id) => {
+      // Encuentra la sesión con el ID correspondiente
+      const sesionSeleccionada = sesiones.find((sesion) => sesion._id === id);
+      setSesion(sesionSeleccionada);
     };
 
     if (id) {
-      fetchSesion(id);
+      fetchSesion(id); // Cargar la sesión cuando el ID cambie
     }
   }, [id]);
+
+  if (!sesion) {
+    return <p>Cargando sesión...</p>;
+  }
 
   const handleAttendanceChange = (index, value) => {
     setSesion((prevSesion) => {
@@ -87,9 +65,9 @@ function GestionarSesion() {
     clearedSesion.participantes.forEach((participante) => {
       participante.asistencia = { estado: '', hora: null };
       participante.participacion = { comentario: '', fecha: null };
-      setRandomStudent(null);
     });
     setSesion(clearedSesion);
+    setRandomStudent(null);
   };
 
   const handleRandomSelect = () => {
@@ -100,13 +78,11 @@ function GestionarSesion() {
     }
   };
 
-  if (!sesion) {
-    return <p>Cargando sesión...</p>;
-  }
-
   return (
     <>
-      <h3 style={{ width: '70%', margin: '20px auto', textAlign: 'center' }}>Asistencia y participación para la Sesión: {sesion.tema}</h3>
+      <h3 style={{ width: '70%', margin: '20px auto', textAlign: 'center' }}>
+        Asistencia y participación para la Sesión: {sesion.tema}
+      </h3>
       <Table variant='success' striped bordered hover style={{ width: '70%', margin: '20px auto' }}>
         <thead>
           <tr>
@@ -124,14 +100,14 @@ function GestionarSesion() {
           {sesion.participantes.map((participante, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td>{participante.codigo}</td>
-              <td>{participante.nombre}</td>
+              <td>{participante.participante}</td>
+              <td>{participante.nombre}</td> {/* Ahora se muestra el nombre del participante */}
               <td>
                 <Form.Check
                   type="radio"
                   name={`attendance-${index}`}
                   value="presente"
-                  checked={participante.asistencia && participante.asistencia.estado === 'presente'}
+                  checked={participante.asistencia.estado === 'presente'}
                   onChange={() => handleAttendanceChange(index, 'presente')}
                 />
               </td>
@@ -140,7 +116,7 @@ function GestionarSesion() {
                   type="radio"
                   name={`attendance-${index}`}
                   value="falta"
-                  checked={participante.asistencia && participante.asistencia.estado === 'falta'}
+                  checked={participante.asistencia.estado === 'falta'}
                   onChange={() => handleAttendanceChange(index, 'falta')}
                 />
               </td>
@@ -149,7 +125,7 @@ function GestionarSesion() {
                   type="radio"
                   name={`attendance-${index}`}
                   value="tardanza"
-                  checked={participante.asistencia && participante.asistencia.estado === 'tardanza'}
+                  checked={participante.asistencia.estado === 'tardanza'}
                   onChange={() => handleAttendanceChange(index, 'tardanza')}
                 />
               </td>
@@ -158,15 +134,14 @@ function GestionarSesion() {
                   type="radio"
                   name={`attendance-${index}`}
                   value="justificado"
-                  checked={participante.asistencia && participante.asistencia.estado === 'justificado'}
+                  checked={participante.asistencia.estado === 'justificado'}
                   onChange={() => handleAttendanceChange(index, 'justificado')}
                 />
               </td>
               <td>
                 <Form.Control
                   type="text"
-                  name={`participacion-${index}`}
-                  value={participante.participacion?.comentario || ''}
+                  value={participante.participacion.comentario}
                   onChange={(e) => handleParticipationChange(index, e.target.value)}
                 />
               </td>
@@ -182,13 +157,13 @@ function GestionarSesion() {
           Limpiar
         </Button>
         <Button variant="primary" onClick={handleRandomSelect}>
-          Random
+          Seleccionar Aleatorio
         </Button>
       </div>
       {randomStudent && (
         <div style={{ width: '70%', margin: '20px auto', textAlign: 'center', color: 'red' }}>
           <p>Estudiante seleccionado aleatoriamente:</p>
-          <p>Código: {randomStudent.codigo}</p>
+          <p>Código: {randomStudent.participante}</p>
           <p>Nombre: {randomStudent.nombre}</p>
         </div>
       )}
