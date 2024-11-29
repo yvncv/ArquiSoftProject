@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  padding: 0; /* Elimina el padding por defecto */
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -8,16 +8,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
 }
+
 html {
   height: 100%;
 }
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
-.login{
-  background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url("../public/urp.jpg");
+.login {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../public/urp.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   max-width: 100vw !important;
@@ -25,9 +27,10 @@ code {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
-.container-formulario{
+.container-formulario {
   background-color: #fff;
   display: flex;
   border-radius: 0px 20px 20px 0px;
@@ -37,11 +40,11 @@ code {
   width: 400px;
 }
 
-.container-formulario input{
-  width: 360px;
+.container-formulario input {
+  width: 100%; /* Ajustado para adaptarse dinámicamente */
 }
 
-.container-formulario-logo{
+.container-formulario-logo {
   background-color: #038731;
   border-radius: 20px 0px 0px 20px;
   width: 400px;
@@ -51,7 +54,7 @@ code {
   justify-content: center;
 }
 
-.logo{
+.logo {
   background-image: url("../public/Logo-URP-Sin-Fondo.png");
   width: 200px;
   height: 200px;
@@ -59,212 +62,153 @@ code {
   background-size: cover;
 }
 
-.container-curso-total{
+.container-curso-total {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.texto-bienvenida{
-  width: 1200px;
-  margin: 20px;
+.texto-bienvenida {
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
 }
 
-.container-curso-total h1{
+.container-curso-total h1 {
   font-weight: 400;
   text-align: left;
 }
 
-.container-curso{
+.container-curso {
   background-color: #fff;
-  width:1200px ;
-  margin-bottom: 250px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
 }
 
-.card{
-  margin: 20px;
+.card {
+  margin: 20px auto;
 }
 
-.card-body{
-  width: 400px;
+.card-body {
+  width: 100%;
+  max-width: 400px;
 }
 
-.card-body .card-title{
+.card-body .card-title {
   font-weight: 400;
   color: #038731;
   text-decoration-line: underline;
   cursor: pointer;
 }
 
-.card-body img{
-  width: 310px;
-  height: 112px;
-  background-size: unset;
+.card-body img {
+  width: 100%;
+  max-width: 310px;
+  height: auto;
   object-fit: cover;
 }
 
-#root{
+#root {
   background-color: #f7f7f7;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-.container-curso-seleccionado-total{
+.container-curso-seleccionado-total {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.nombre-curso{
-  width: 1200px;
-  margin: 20px;
+.nombre-curso {
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
 }
 
-.container-curso-seleccionado-total h1{
+.container-curso-seleccionado-total h1 {
   font-weight: 700;
   text-align: left;
-  font-size: 30px;
+  font-size: 1.8rem;
 }
 
-.container-curso-seleccionado{
-  width: 1200px;
+.container-curso-seleccionado {
+  width: 100%;
+  max-width: 1200px;
   background-color: #fff;
-  margin-bottom: 250px;
+  margin: 20px auto;
 }
 
-.opciones-curso{
+.opciones-curso {
   display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
-.opciones-curso h3{
-  font-size: 16.5px;
+.opciones-curso h3 {
+  font-size: 1rem;
 }
 
-.opcion{
+.opcion {
   height: 60px;
-  padding: 30px;
+  padding: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 150px;
 }
 
-.opcion.activo{
+.opcion.activo {
   background-color: #c8e1d3;
-  border-bottom: 3px solid #378E5B;
+  border-bottom: 3px solid #378e5b;
   cursor: pointer;
 }
 
-.opcion:hover{
+.opcion:hover {
   background-color: #e9e9e9;
   border-bottom: 3px solid #363636;
-  cursor: pointer;
 }
 
-.seccion{
+.seccion {
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   align-items: center;
-  height: 93px;
   padding: 20px;
 }
 
-.seccion h3{
+.seccion h3 {
   font-size: 1.25rem;
   font-weight: 400;
 }
 
-.footer-cursos{
-  background-color: #1A1C1B;
-  color: #CDCECE;
-  height: 300px;
-  display: flex;
-  justify-content: space-around;
-  padding-top: 30px;
-}
-
-.footer-cursos-texto{
+.footer-cursos {
+  background-color: #1a1c1b;
+  color: #cdcece;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+  text-align: center;
+}
+
+.footer-cursos-texto {
   gap: 10px;
 }
 
-.footer-cursos-iconos{
+.footer-cursos-iconos {
   display: flex;
   gap: 20px;
 }
 
-/* Gestionar Cursos */
-
-.boton-agregar-curso{
-  padding: 20px;
-  width: 100vw;
-  display: flex;
-  justify-content: end;
-}
-
-.boton-agregar-curso .btn{
-  width: 180px;
-  height: 50px;
-  border-radius: 20px;
-  background-color: #038731;
-  border: none;
-}
-
-.contenido-gestionar-curso{
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-}
-
-.buscador-gestionar-curso{
-  padding: 0px 30px 30px 30px;
-}
-
-.buscador-gestionar-curso input{
-  border-radius: 20px;
-}
-
-.tabla-gestionar-cursos{
-  padding: 0px 30px 30px 30px;
-}
-
-.tabla-gestionar-cursos{
-  border-radius: 20px;
-}
-
-.paginacion-gestionar-cursos{
-  display: flex !important;
-  justify-content: end;
-  width: 100vw;
-}
-
-.paginacion-gestionar-cursos ul{
-  padding: 0px 30px 30px 30px;
-}
-
-.paginacion-gestionar-cursos .active span{
-  background-color: #038731 !important;
-  border: none;
-}
-
-/* Crear Curso */
-
-.boton-crear-curso{
-  background-color: #038731 !important;
-  border: none !important;
-}
-
-/* Gestionar Usuarios */
-
-.boton-agregar-usuario {
-  padding: 20px;
-  width: 100vw;
-  display: flex;
-  justify-content: end;
-}
-
+/* Botones */
+.boton-agregar-curso .btn,
 .boton-agregar-usuario .btn {
   width: 180px;
   height: 50px;
@@ -273,54 +217,67 @@ code {
   border: none;
 }
 
-.contenido-gestionar-usuario {
-  display: flex;
-  flex-direction: column;
-  width: 100vw;
-}
-
-.buscador-gestionar-usuario {
-  padding: 0px 30px 30px 30px;
-}
-
-.buscador-gestionar-usuario input {
+/* Tablas */
+.tabla-gestionar-cursos,
+.tabla-gestionar-usuarios {
+  padding: 0 30px 30px;
   border-radius: 20px;
 }
 
-.tabla-gestionar-usuarios {
-  padding: 0px 30px 30px 30px;
-}
-
-.tabla-gestionar-usuarios {
-  border-radius: 20px;
-}
-
+.paginacion-gestionar-cursos,
 .paginacion-gestionar-usuarios {
   display: flex !important;
-  justify-content: end;
-  width: 100vw;
+  justify-content: center;
 }
 
-.paginacion-gestionar-usuarios ul {
-  padding: 0px 30px 30px 30px;
+/* Media Queries */
+@media (max-width: 1200px) {
+  .container-curso,
+  .container-curso-seleccionado,
+  .texto-bienvenida,
+  .nombre-curso {
+    width: 90%;
+  }
 }
 
-.paginacion-gestionar-usuarios .active span {
-  background-color: #038731 !important;
-  border: none;
+@media (max-width: 768px) {
+  .login {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .container-formulario,
+  .container-formulario-logo {
+    width: 90%;
+  }
+
+  .opciones-curso {
+    justify-content: center;
+  }
+
+  .boton-agregar-curso .btn,
+  .boton-agregar-usuario .btn {
+    width: 150px;
+    height: 40px;
+  }
+
+  h1,
+  h3 {
+    font-size: 1.2rem;
+  }
 }
 
-/* Crear Usuario */
+@media (max-width: 480px) {
+  .card-body img {
+    width: 100%;
+    height: auto;
+  }
 
-.boton-crear-usuario{
-  background-color: #038731 !important;
-  border: none !important;
+  .footer-cursos {
+    flex-direction: column;
+  }
+
+  .opciones-curso h3 {
+    font-size: 0.9rem;
+  }
 }
-
-/* Curso interfaz Usuario */
-
-/* .container-participantes {
-  max-height: 1000px; /* Ajusta este valor según sea necesario
-  width: 1200px;
-  overflow-y: auto;
-} */
