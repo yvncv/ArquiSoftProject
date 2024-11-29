@@ -88,7 +88,6 @@ function GestionarUsuarios() {
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Codigo</th>
                         <th>Nombre</th>
                         <th>Carrera</th>
@@ -102,7 +101,6 @@ function GestionarUsuarios() {
                 <tbody>
                     {currentItems.map(usuario => (
                         <tr key={usuario.id}>
-                            <td>{usuario.id}</td>
                             <td>{usuario.codigo}</td>
                             <td>{usuario.nombre}</td>
                             <td>{usuario.carrera}</td>
