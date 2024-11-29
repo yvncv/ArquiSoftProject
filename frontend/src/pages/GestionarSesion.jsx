@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import axios from 'axios';
+import { usuariosData, semanasData } from '../data'; // Importar los datos desde data.js
 
 function GestionarSesion() {
   const [sesion, setSesion] = useState(null);
@@ -11,29 +11,31 @@ function GestionarSesion() {
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchSesion = async (sesionId) => {
+    const fetchSesion = (sesionId) => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/sesiones/${sesionId}`);
-        const sesionData = response.data;
-
-        const participantesActualizados = await Promise.all(
-          sesionData.participantes.map(async (participante) => {
-            const response = await axios.get(`http://localhost:8080/api/usuarios/${participante.participante}`);
-            const participanteData = response.data;
-
-            return {
-              ...participante,
-              participante: participanteData,
-              asistencia: participante.asistencia || { estado: '', hora: null },
-              participacion: participante.participacion || { comentario: '', fecha: null }
-            };
-          })
+        // Buscar la sesión correspondiente en semanasData
+        const semana = semanasData.find((semana) =>
+          semana.sesiones.some((sesion) => sesion._id === sesionId)
         );
 
-        // Filtrar solo participantes cuyo rol sea "alumno"
-        const alumnos = participantesActualizados.filter(participante => participante.participante.role === 'alumno');
+        if (semana) {
+          const sesionData = semana.sesiones.find((sesion) => sesion._id === sesionId);
 
-        setSesion({ ...sesionData, participantes: alumnos });
+          // Aquí se actualiza los participantes con la información de los usuarios
+          const participantesActualizados = sesionData.participantes.map((participanteId) => {
+            const participanteData = usuariosData.find((usuario) => usuario.id === participanteId);
+            return {
+              _id: participanteData.id,
+              nombre: participanteData.nombre,
+              codigo: participanteData.codigo,
+              role: participanteData.role,
+              asistencia: { estado: '', hora: null },
+              participacion: { comentario: '', fecha: null }
+            };
+          });
+
+          setSesion({ ...sesionData, participantes: participantesActualizados });
+        }
       } catch (error) {
         console.error('Error fetching session:', error);
       }
@@ -66,7 +68,7 @@ function GestionarSesion() {
     });
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     const allAttended = sesion.participantes.every(
       (participante) => participante.asistencia && participante.asistencia.estado !== ''
     );
@@ -75,29 +77,9 @@ function GestionarSesion() {
       return;
     }
 
-    try {
-      const participantesToUpdate = sesion.participantes.map((participante) => ({
-        participante: participante.participante._id,
-        asistencia: {
-          estado: participante.asistencia.estado,
-          hora: participante.asistencia.hora
-        },
-        participacion: {
-          comentario: participante.participacion.comentario,
-          fecha: participante.participacion.fecha
-        }
-      }));
-
-      const response = await axios.put(`http://localhost:8080/api/sesiones/${id}`, {
-        participantes: participantesToUpdate
-      });
-
-      console.log('Attendance saved successfully:', response.data);
-      alert('Asistencia guardada exitosamente!');
-    } catch (error) {
-      console.error('Error saving attendance:', error);
-      alert('Error al guardar la asistencia. Intente nuevamente.');
-    }
+    // Aquí puedes agregar la lógica para guardar los datos de asistencia y participación
+    console.log('Asistencia y participación guardada:', sesion);
+    alert('Asistencia guardada exitosamente!');
   };
 
   const handleClear = () => {
@@ -113,7 +95,7 @@ function GestionarSesion() {
   const handleRandomSelect = () => {
     if (sesion && sesion.participantes.length > 0) {
       const randomIndex = Math.floor(Math.random() * sesion.participantes.length);
-      const selectedStudent = sesion.participantes[randomIndex].participante;
+      const selectedStudent = sesion.participantes[randomIndex];
       setRandomStudent(selectedStudent);
     }
   };
@@ -142,8 +124,8 @@ function GestionarSesion() {
           {sesion.participantes.map((participante, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td>{participante.participante.codigo}</td>
-              <td>{participante.participante.nombre}</td>
+              <td>{participante.codigo}</td>
+              <td>{participante.nombre}</td>
               <td>
                 <Form.Check
                   type="radio"

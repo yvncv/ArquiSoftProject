@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Col, Row, Container, Alert } from 'react-bootstrap';
-import axios from 'axios';
+import { usuarios, cursos } from '../data';  // Importa los datos
 
 const carrerasPorFacultad = {
     ingenieria: [
@@ -40,29 +40,19 @@ function EditarCursoModal({ show, handleClose, curso, actualizarCursoEnLista }) 
   const [success, setSuccess] = useState(null);
 
   useEffect(() => {
-    const fetchAlumnos = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/api/usuarios/");
-        console.log(response.data);
-        const filteredAlumnos = response.data.filter(
-          (usuario) =>
-            usuario.role === "alumno" &&
-            usuario.ciclo == curso.ciclo &&
-            usuario.carrera === curso.carrera
-        );
-        const options = filteredAlumnos.map((alumno) => ({
-          value: `${alumno._id}`,
-          label: `${alumno.nombre}`,
-        }));
-        setAlumnosOptions(options);
-        console.log(alumnosOptions);
-      } catch (error) {
-        console.error("Error fetching students:", error);
-      }
-    };
-
-    fetchAlumnos();
-  }, [formData.semestre, formData.carrera, formData.ciclo]);
+    // Filtrar los usuarios basados en la carrera y ciclo del curso
+    const filteredAlumnos = usuarios.filter(
+      (usuario) =>
+        usuario.role === "alumno" &&
+        usuario.ciclo === curso.ciclo &&
+        usuario.carrera === curso.carrera
+    );
+    const options = filteredAlumnos.map((alumno) => ({
+      value: `${alumno._id}`,
+      label: `${alumno.nombre}`,
+    }));
+    setAlumnosOptions(options);
+  }, [curso]);
 
   useEffect(() => {
     if (curso) {
@@ -174,8 +164,9 @@ function EditarCursoModal({ show, handleClose, curso, actualizarCursoEnLista }) 
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.put(`http://localhost:8080/api/cursos/${curso._id}`, formData);
-      actualizarCursoEnLista(res.data);
+      // Simulando la actualización de curso (no es necesario realizar la llamada a la API)
+      const updatedCurso = { ...formData, _id: curso._id };
+      actualizarCursoEnLista(updatedCurso);
       setSuccess("Curso actualizado con éxito");
       setError(null);
       setTimeout(() => {

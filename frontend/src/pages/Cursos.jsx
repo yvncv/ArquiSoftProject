@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Card, Row, Col, Accordion } from "react-bootstrap";
-import axios from "axios";
+import { Card, Row, Col } from "react-bootstrap";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { cursos, usuariosData } from "../data"; // Importar los datos locales
 
 const Cursos = () => {
-  const [cursos, setCursos] = useState([]);
+  const [cursosFiltrados, setCursosFiltrados] = useState([]);
   const [usuario, setUsuario] = useState(null); // Estado local para el usuario
   const navigate = useNavigate(); // Obtener el navigate
 
@@ -32,25 +32,18 @@ const Cursos = () => {
   }, [usuario]); // Ejecutar este efecto cuando `usuario` cambie
 
   useEffect(() => {
-    const fetchCursos = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/api/cursos");
-        if (usuario) {
-          const cursosFiltrados = response.data.filter(curso =>
-            curso.grupos.some(grupo => grupo.participantes.includes(usuario.id))
-          );
-          setCursos(cursosFiltrados);
-        } else {
-          setCursos([]);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
     if (usuario) {
-      fetchCursos();
+      // Filtrar los cursos en base al usuario
+      const cursosFiltrados = cursos.filter((curso) =>
+        curso.grupos.some((grupo) => 
+          grupo.participantes.includes(usuario.id)
+        )
+      );
+      setCursosFiltrados(cursosFiltrados);
+    } else {
+      setCursosFiltrados([]);
     }
-  }, [usuario]);
+  }, [usuario]); // Filtrar cursos cada vez que el usuario cambie
 
   const formatCarrera = (carrera) => {
     const palabras = carrera.split(" ");
@@ -70,10 +63,10 @@ const Cursos = () => {
         </div>
         <div className="container-curso">
           <Row className="container-cursos-vista">
-            {cursos.length === 0 ? (
+            {cursosFiltrados.length === 0 ? (
               <div>No hay cursos disponibles</div>
             ) : (
-              cursos.map((curso) => (
+              cursosFiltrados.map((curso) => (
                 <Col md={4} key={curso._id}>
                   <Card className="mb-3">
                     <Card.Body>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
-import axios from "axios";
+import { usuarios } from '../data.js'; // Importando los datos simulados
 
 const carrerasPorFacultad = {
   ingenieria: [
@@ -45,34 +45,30 @@ const CrearCurso = () => {
   }
 
   useEffect(() => {
-    const fetchAlumnosYProfesores = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/api/usuarios/");
-        const filteredAlumnos = response.data.filter(
-          (usuario) =>
-            usuario.role === "alumno" &&
-            usuario.ciclo === formData.ciclo &&
-            usuario.carrera === formData.carrera
-        );
-        const filteredProfesores = response.data.filter(
-          (usuario) =>
-            usuario.role === "profesor" && usuario.facultad === formData.facultad
-        );
+    const fetchAlumnosYProfesores = () => {
+      // Filtrando alumnos y profesores a partir de los datos en data.js
+      const filteredAlumnos = usuarios.filter(
+        (usuario) =>
+          usuario.role === "alumno" &&
+          usuario.ciclo === formData.ciclo &&
+          usuario.carrera === formData.carrera
+      );
+      const filteredProfesores = usuarios.filter(
+        (usuario) =>
+          usuario.role === "profesor" && usuario.facultad === formData.facultad
+      );
 
-        const alumnosOptions = filteredAlumnos.map((alumno) => ({
-          value: `${alumno._id}`,
-          label: `${alumno.nombre}`,
-        }));
-        const profesoresOptions = filteredProfesores.map((profesor) => ({
-          value: `${profesor._id}`,
-          label: `${profesor.nombre}`,
-        }));
+      const alumnosOptions = filteredAlumnos.map((alumno) => ({
+        value: `${alumno._id}`,
+        label: `${alumno.nombre}`,
+      }));
+      const profesoresOptions = filteredProfesores.map((profesor) => ({
+        value: `${profesor._id}`,
+        label: `${profesor.nombre}`,
+      }));
 
-        setAlumnosOptions(alumnosOptions);
-        setProfesoresOptions(profesoresOptions);
-      } catch (error) {
-        console.error("Error fetching students and professors:", error);
-      }
+      setAlumnosOptions(alumnosOptions);
+      setProfesoresOptions(profesoresOptions);
     };
 
     fetchAlumnosYProfesores();
@@ -119,7 +115,7 @@ const CrearCurso = () => {
         {
           tipoGrupo: "",
           horario: [],
-          participantes: [{ tipo: "profesor", value: "" }], // Inicialmente agregamos un campo para el profesor
+          participantes: [{ tipo: "profesor", value: "" }],
         },
       ],
     }));
@@ -160,7 +156,7 @@ const CrearCurso = () => {
         ...formData,
       };
 
-      await axios.post("http://localhost:8080/api/cursos", dataToSend);
+      // Aquí puedes manejar la creación del curso, simular la creación, o enviar a un servidor
       setLoading(false);
       setSuccess("Curso creado exitosamente");
 

@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, FormControl, InputGroup, Pagination, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { cursos } from '../data'; // Importar los cursos desde data.js
 import EditarCursoModal from '../components/EditarCursoModal';
 import VerCursoModal from '../components/VerCursoModal';
 
 function GestionarCursos() {
-  const [lista, setLista] = useState([]);
-  const [filteredLista, setFilteredLista] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
-  const [showEditarModal, setShowEditarModal] = useState(false);
-  const [showVerModal, setShowVerModal] = useState(false);
-  const [showEliminarModal, setShowEliminarModal] = useState(false);
-  const [cursoAEliminar, setCursoAEliminar] = useState(null);
-  const navigate = useNavigate();
+  const [lista, setLista] = useState([]); // Lista de cursos
+  const [filteredLista, setFilteredLista] = useState([]); // Lista filtrada por búsqueda
+  const [currentPage, setCurrentPage] = useState(1); // Página actual
+  const [itemsPerPage] = useState(10); // Elementos por página
+  const [searchTerm, setSearchTerm] = useState(''); // Término de búsqueda
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(null); // Curso seleccionado para ver o editar
+  const [showEditarModal, setShowEditarModal] = useState(false); // Estado para mostrar el modal de edición
+  const [showVerModal, setShowVerModal] = useState(false); // Estado para mostrar el modal de ver curso
+  const [showEliminarModal, setShowEliminarModal] = useState(false); // Estado para mostrar el modal de eliminación
+  const [cursoAEliminar, setCursoAEliminar] = useState(null); // Curso a eliminar
+  const navigate = useNavigate(); // Navegar a otras páginas
 
   useEffect(() => {
-    obtenerCursos();
+    setLista(cursos); // Cargar los cursos directamente desde data.js
   }, []);
 
   useEffect(() => {
@@ -29,63 +29,49 @@ function GestionarCursos() {
       curso.carrera.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredLista(filtered);
-    setCurrentPage(1); // Reset page to 1 after search
+    setCurrentPage(1); // Resetear la página a 1 después de hacer búsqueda
   }, [searchTerm, lista]);
 
-  const obtenerCursos = async () => {
-    try {
-      const res = await axios.get('http://localhost:8080/api/cursos');
-      setLista(res.data); // Asigna los datos recibidos al estado lista
-    } catch (error) {
-      console.error("Error al obtener los cursos:", error);
-    }
-  };
-
   const crearCurso = () => {
-    navigate('/crear_curso'); // Navegar al formulario de creación de usuario
+    navigate('/crear_curso'); // Navegar al formulario de creación de curso
   };
 
   const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
+    setSearchTerm(event.target.value); // Actualizar el término de búsqueda
   };
 
   const handleEditarCurso = (curso) => {
     setCursoSeleccionado(curso);
-    setShowEditarModal(true);
+    setShowEditarModal(true); // Mostrar modal de edición
   };
 
   const handleVerCurso = (curso) => {
     setCursoSeleccionado(curso);
-    setShowVerModal(true);
+    setShowVerModal(true); // Mostrar modal de ver curso
   };
 
-  const handleEliminarCurso = async () => {
-    try {
-      await axios.delete(`http://localhost:8080/api/cursos/${cursoAEliminar._id}`);
-      setLista(lista.filter(curso => curso._id !== cursoAEliminar._id));
-      setShowEliminarModal(false);
-    } catch (error) {
-      console.error("Error al eliminar el curso:", error);
-    }
+  const handleEliminarCurso = () => {
+    setLista(lista.filter(curso => curso._id !== cursoAEliminar._id)); // Eliminar curso de la lista
+    setShowEliminarModal(false); // Cerrar el modal de eliminación
   };
 
   const handleConfirmarEliminar = (curso) => {
     setCursoAEliminar(curso);
-    setShowEliminarModal(true);
+    setShowEliminarModal(true); // Mostrar modal de confirmación de eliminación
   };
 
   const actualizarCursoEnLista = (cursoActualizado) => {
     const listaActualizada = lista.map(curso =>
       curso._id === cursoActualizado._id ? cursoActualizado : curso
     );
-    setLista(listaActualizada);
+    setLista(listaActualizada); // Actualizar la lista de cursos
   };
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredLista.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredLista.slice(indexOfFirstItem, indexOfLastItem); // Elementos de la página actual
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber); // Cambiar la página actual
 
   return (
     <>

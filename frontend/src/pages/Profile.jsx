@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { jwtDecode } from "jwt-decode";
+import { usuariosData } from "../data"; // Importamos los datos simulados
 
 const Profile = () => {
-    const [usuario, setUsuario] = useState(null); // Estado local para el usuario
+  const [usuario, setUsuario] = useState(null); // Estado local para el usuario
 
-    useEffect(() => {
-        const obtenerUsuario = async () => {
-          try {
-            const token = localStorage.getItem('token');
-            if (token) {
-              const decoded = jwtDecode(token);
-              setUsuario(decoded.usuario);
-            }
-          } catch (error) {
-            console.error('Error al decodificar el token:', error);
-          }
-        };
+  useEffect(() => {
+    const obtenerUsuario = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Simulamos la obtención del usuario usando el código almacenado en el token
+        const decoded = JSON.parse(atob(token.split('.')[1])); // Decodificamos el token JWT simulado
+        const usuarioEncontrado = usuariosData.find(u => u.codigo === decoded.codigo); // Usamos el código para buscar al usuario
+        setUsuario(usuarioEncontrado);
+      }
+    };
     
-        obtenerUsuario();
-      }, []);
+    obtenerUsuario();
+  }, []);
 
   if (!usuario) return <p>Cargando...</p>;
 
@@ -33,7 +31,7 @@ const Profile = () => {
             className="rounded-circle mb-3"
           />
           <h2>{usuario.nombre}</h2>
-          <p>{usuario.email}</p>
+          <p>{usuario.correo || 'Correo no disponible'}</p>
         </Col>
       </Row>
       <Row>
@@ -52,7 +50,7 @@ const Profile = () => {
             <strong>Ciclo:</strong> {usuario.ciclo}
           </p>
           <p>
-            <strong>Coreo electrónico:</strong> {usuario.email}
+            <strong>Correo electrónico:</strong> {usuario.correo || 'Correo no disponible'}
           </p>
         </Col>
       </Row>

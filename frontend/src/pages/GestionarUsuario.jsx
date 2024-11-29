@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 import { Button, FormControl, InputGroup, Pagination } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import ModalEliminar from '../components/ModalEliminar';
-import axios from 'axios';
+import { usuariosData } from '../data'; // Importamos los datos desde data.js
 
 function GestionarUsuarios() {
     const [lista, setLista] = useState([]);
@@ -16,7 +16,8 @@ function GestionarUsuarios() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        obtenerUsuarios();
+        // Cargar usuarios desde los datos simulados
+        setLista(usuariosData);
     }, []);
 
     useEffect(() => {
@@ -24,22 +25,11 @@ function GestionarUsuarios() {
             usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
             usuario.codigo.toLowerCase().includes(searchTerm.toLowerCase()) ||
             usuario.carrera.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            usuario.correo.toLowerCase().includes(searchTerm.toLowerCase()) ||
             usuario.role.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredLista(filtered);
         setCurrentPage(1); // Reset page to 1 after search
     }, [searchTerm, lista]);
-
-    const obtenerUsuarios = async () => {
-        try {
-            const res = await axios.get('http://localhost:8080/api/usuarios');
-            console.log('Datos obtenidos del servidor:', res.data);
-            setLista(res.data);
-        } catch (error) {
-            console.error("Error al obtener los usuarios:", error);
-        }
-    };
 
     const handleMostrarModal = (id) => {
         setIdEliminarUsuario(id);
@@ -51,16 +41,10 @@ function GestionarUsuarios() {
         setIdEliminarUsuario(null);
     };
 
-    const eliminarUsuario = async () => {
+    const eliminarUsuario = () => {
         if (idEliminarUsuario) {
-            try {
-                await axios.delete(`http://localhost:8080/api/usuarios/${idEliminarUsuario}`);
-                setLista(prevLista => prevLista.filter(usuario => usuario._id !== idEliminarUsuario));
-            } catch (error) {
-                console.error("Error al eliminar el usuario:", error);
-            } finally {
-                handleCerrarModal();
-            }
+            setLista(prevLista => prevLista.filter(usuario => usuario.id !== idEliminarUsuario));
+            handleCerrarModal();
         }
     };
 
@@ -117,8 +101,8 @@ function GestionarUsuarios() {
                 </thead>
                 <tbody>
                     {currentItems.map(usuario => (
-                        <tr key={usuario._id}>
-                            <td>{usuario._id}</td>
+                        <tr key={usuario.id}>
+                            <td>{usuario.id}</td>
                             <td>{usuario.codigo}</td>
                             <td>{usuario.nombre}</td>
                             <td>{usuario.carrera}</td>
@@ -128,7 +112,7 @@ function GestionarUsuarios() {
                             <td>
                                 <Button 
                                     variant='success' 
-                                    onClick={() => editarUsuario(usuario._id)}
+                                    onClick={() => editarUsuario(usuario.id)}
                                 >
                                     Editar
                                 </Button>
@@ -136,7 +120,7 @@ function GestionarUsuarios() {
                             <td>
                                 <Button 
                                     variant='danger' 
-                                    onClick={() => handleMostrarModal(usuario._id)}
+                                    onClick={() => handleMostrarModal(usuario.id)}
                                 >
                                     Eliminar
                                 </Button>

@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+import { usuariosData } from "../data"; // Importar los usuarios desde data.js
 
 const Dashboard = () => {
   const [usuario, setUsuario] = useState(null); // Estado local para el usuario
 
   useEffect(() => {
-    const obtenerUsuario = async () => {
+    const obtenerUsuario = () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token'); // Obtener el token
         if (token) {
-          const decoded = jwtDecode(token);
-          setUsuario(decoded.usuario);
+          // Buscar el usuario basado en el token, aquí asumimos que el token contiene el 'id' del usuario
+          const decoded = JSON.parse(atob(token.split('.')[1])); // Decodificar el payload del JWT (sin usar jwt-decode)
+          const usuarioEncontrado = usuariosData.find(user => user.id === decoded.usuario.id);
+          setUsuario(usuarioEncontrado);
         }
       } catch (error) {
         console.error('Error al decodificar el token:', error);
@@ -27,7 +29,6 @@ const Dashboard = () => {
   }, [usuario]); // Ejecutar este efecto cuando `usuario` cambie
 
   return (
-    <>
     <div>
       {/* Mensaje de bienvenida */}
       {usuario ? (
@@ -36,7 +37,6 @@ const Dashboard = () => {
         <p>Bienvenido, aún no has iniciado sesión</p>
       )}
     </div>
-    </>
   );
 };
 

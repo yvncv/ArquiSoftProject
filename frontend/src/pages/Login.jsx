@@ -1,11 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Form, Button, Container, Col } from 'react-bootstrap';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { usuariosData } from '../data'; // Importamos los datos simulados
 
 const Login = ({ setLoggedInUser }) => {
-  const { login } = useContext(AuthContext);
   const [codigo, setCodigo] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,37 +18,24 @@ const Login = ({ setLoggedInUser }) => {
     }
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     setLoading(true); // Activar el estado de carga
-  
-    try {
-      const res = await axios.post('http://localhost:8080/api/usuarios/login', { codigo, password });
-      localStorage.setItem('token', res.data.token);
-      const {token} = res.data;
-      // Hacer una solicitud GET para obtener los datos del usuario
-      const userDataRes = await axios.get(`http://localhost:8080/api/usuarios/login/${token}`);
-      setLoggedInUser(userDataRes.data);
-      login(userDataRes.data.usuario);
-      
-      console.log('Usuario logueado:', userDataRes.data);
+
+    // Simulamos la verificación de usuario con los datos de usuariosData
+    const usuario = usuariosData.find(u => u.codigo === codigo && u.password === password); 
+
+    if (usuario) {
+      setLoggedInUser(usuario);
+      localStorage.setItem('token', 'simulated-token'); // Simulamos un token
+      console.log('Usuario logueado:', usuario);
       navigate('/cursos'); // Redirige al usuario al dashboard
-  
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          setError(error.response.data.msg);
-        } else if (error.request) {
-          setError('No se recibió respuesta del servidor.');
-        } else {
-          setError('Error al iniciar sesión.');
-        }
-      }
-    } finally {
-      setLoading(false); // Desactivar el estado de carga cuando finaliza la solicitud
+    } else {
+      setError('Credenciales incorrectas');
     }
+
+    setLoading(false); // Desactivar el estado de carga cuando finaliza la verificación
   };
-  
 
   return (
     <Container className='login'>

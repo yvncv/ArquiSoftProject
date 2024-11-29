@@ -2,16 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card } from "react-bootstrap";
 import { Pie } from "react-chartjs-2";
-import {
-  Table,
-  FormControl,
-  InputGroup,
-  Accordion,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
-import axios from "axios";
+import { Table, FormControl, InputGroup, Accordion, Tab, Tabs } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
+import { usuariosData, semanasData, asistenciasData, participacionesData, cursos } from "../data"; // Importar datos locales
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -40,8 +34,8 @@ ChartJS.register(
 const Curso = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { curso } = location.state || {};
-  const {loggedInUser} = useContext(AuthContext);
+  const { cursoId } = location.state || {};
+  const { loggedInUser } = useContext(AuthContext);
   const usuario = loggedInUser;
   const [key, setKey] = useState("home");
   const [participantes, setParticipantes] = useState([]);
@@ -54,34 +48,22 @@ const Curso = () => {
     total: 0,
     participo: 0,
   });
-  const [semanas, setSemanas] = useState([]);
+  const [curso, setCurso] = useState(null);
 
   useEffect(() => {
-    if (curso) {
-      const fetchParticipantes = async () => {
-        try {
-          const participantesIds = curso.grupos.flatMap(
-            (grupo) => grupo.participantes
-          );
-          const participantesPromises = participantesIds.map((id) =>
-            axios.get(`http://localhost:8080/api/usuarios/${id}`)
-          );
-          const participantesResponses = await Promise.all(
-            participantesPromises
-          );
-          const participantesData = participantesResponses.map(
-            (response) => response.data
-          );
-          setParticipantes(participantesData);
-          setFilteredParticipantes(participantesData);
-        } catch (error) {
-          console.error("Error fetching participantes", error);
-        }
-      };
+    // Encontrar el curso con el id proporcionado
+    const selectedCurso = cursos.find((curso) => curso._id === cursoId);
+    setCurso(selectedCurso);
 
-      fetchParticipantes();
+    if (selectedCurso) {
+      const participantesIds = selectedCurso.grupos.flatMap((grupo) => grupo.participantes);
+      const participantesData = usuariosData.filter((usuario) =>
+        participantesIds.includes(usuario.id)
+      );
+      setParticipantes(participantesData);
+      setFilteredParticipantes(participantesData);
     }
-  }, [curso]);
+  }, [cursoId]);
 
   useEffect(() => {
     const results = participantes.filter(
@@ -94,95 +76,54 @@ const Curso = () => {
   }, [searchTerm, participantes]);
 
   useEffect(() => {
-    const fetchAsistencias = async () => {
-      try {
-        const semanasIds = curso.grupos.flatMap((grupo) => grupo.semanas);
-        const semanasPromises = semanasIds.map((id) =>
-          axios.get(`http://localhost:8080/api/semanas/${id}`)
-        );
-        const semanasResponses = await Promise.all(semanasPromises);
-        const semanasData = semanasResponses.map((response) => response.data);
-
-        // Obtener las sesiones para cada semana
-        const sesionesPromises = semanasData.map(async (semana) => {
-          const sesiones = await Promise.all(
-            semana.sesiones.map((sesionId) =>
-              axios.get(`http://localhost:8080/api/sesiones/${sesionId}`)
-            )
-          );
-          return { ...semana, sesiones: sesiones.map((s) => s.data) };
-        });
-
-        const semanasConSesiones = await Promise.all(sesionesPromises);
-        setSemanas(semanasConSesiones);
-
-        let asistenciasData = [];
-        let participacionesData = [];
-        let totalSesiones = 0;
-        let sesionesPresentes = 0;
-        let sesionesFalta = 0;
-        let sesionesTardanzas = 0;
-        let sesionesJustificados = 0;
-        let sesionesParticipo = 0;
-
-        for (const semana of semanasConSesiones) {
-          for (const sesion of semana.sesiones) {
-            totalSesiones++;
-
-            const asistencia = sesion.participantes.find(
-              (p) => p.participante === usuario.id
-            )?.asistencia;
-            const participacion = sesion.participantes.find(
-              (p) => p.participante === usuario.id
-            )?.participacion;
-
-            if (asistencia?.estado === "presente") {
-              sesionesPresentes++;
-            } else if (asistencia?.estado === "falta") {
-              sesionesFalta++;
-            } else if (asistencia?.estado === "tardanza") {
-              sesionesTardanzas++;
-            } else if (asistencia?.estado === "justificado") {
-              sesionesJustificados++;
-            }
-
-            asistenciasData.push({
-              tema: sesion.tema,
-              fecha: sesion.fecha,
-              asistencia: asistencia || { estado: "No registrado", hora: null },
-            });
-
-            participacionesData.push({
-              tema: sesion.tema,
-              fecha: sesion.fecha,
-              participacion: participacion || {
-                comentario: "No registrado",
-                fecha: null,
-              },
-            });
-          }
-        }
-
-        setAsistencias(asistenciasData);
-        setParticipaciones(participacionesData);
-        setEstadisticas({
-          total: totalSesiones,
-          presente: sesionesPresentes,
-          falta: sesionesFalta,
-          tardanza: sesionesTardanzas,
-          justificado: sesionesJustificados,
-        });
-        setEstadisticasParticipacion({
-          total: totalSesiones,
-          participo: sesionesParticipo,
-        });
-      } catch (error) {
-        console.error("Error fetching asistencias y participaciones", error);
-      }
-    };
-
     if (curso && usuario) {
-      fetchAsistencias();
+      const semanasConSesiones = semanasData.filter((semana) =>
+        curso.grupos.some((grupo) => grupo.sesiones.includes(semana.id))
+      );
+      setAsistencias(asistenciasData); // Simula la carga de asistencias desde datos locales
+      setParticipaciones(participacionesData); // Simula la carga de participaciones desde datos locales
+
+      let totalSesiones = 0;
+      let sesionesPresentes = 0;
+      let sesionesFalta = 0;
+      let sesionesTardanzas = 0;
+      let sesionesJustificados = 0;
+      let sesionesParticipo = 0;
+
+      semanasConSesiones.forEach((semana) => {
+        semana.sesiones.forEach((sesion) => {
+          totalSesiones++;
+
+          const asistencia = asistenciasData.find((a) => a.tema === sesion.tema);
+          const participacion = participacionesData.find((p) => p.tema === sesion.tema);
+
+          if (asistencia?.asistencia?.estado === "presente") {
+            sesionesPresentes++;
+          } else if (asistencia?.asistencia?.estado === "falta") {
+            sesionesFalta++;
+          } else if (asistencia?.asistencia?.estado === "tardanza") {
+            sesionesTardanzas++;
+          } else if (asistencia?.asistencia?.estado === "justificado") {
+            sesionesJustificados++;
+          }
+
+          if (participacion) {
+            sesionesParticipo++;
+          }
+        });
+      });
+
+      setEstadisticas({
+        total: totalSesiones,
+        presente: sesionesPresentes,
+        falta: sesionesFalta,
+        tardanza: sesionesTardanzas,
+        justificado: sesionesJustificados,
+      });
+      setEstadisticasParticipacion({
+        total: totalSesiones,
+        participo: sesionesParticipo,
+      });
     }
   }, [curso, usuario]);
 
@@ -207,7 +148,6 @@ const Curso = () => {
       navigate(`/asistencia/${sessionId}`);
     } else {
       console.error("Session ID is undefined or null.");
-      // Puedes manejar el error aquí, por ejemplo, mostrando un mensaje al usuario.
     }
   };
 
@@ -258,6 +198,7 @@ const Curso = () => {
     return <div>Curso no encontrado</div>;
   }
 
+
   return (
     <>
       <div className="container-curso-seleccionado-total">
@@ -275,8 +216,8 @@ const Curso = () => {
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>General</Accordion.Header>
                 </Accordion.Item>
-                {semanas.length > 0 ? (
-                  semanas.map((semana, index) => (
+                {semanasData.length > 0 ? (
+                  semanasData.map((semana, index) => (
                     <Accordion.Item key={index} eventKey={`${index}`}>
                       <Accordion.Header>Semana {index + 1}</Accordion.Header>
                       <Accordion.Body>
