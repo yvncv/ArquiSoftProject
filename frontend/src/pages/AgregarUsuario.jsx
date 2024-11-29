@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Col, Form, Row, Container } from 'react-bootstrap';
-import { usuarios } from '../data';  // Suponiendo que los datos de usuarios están en data.js
+import { usuarios, cursos, sesiones, semanas } from '../data';
 
 const carrerasPorFacultad = {
   ingenieria: [

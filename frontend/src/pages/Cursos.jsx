@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Row, Col } from "react-bootstrap";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import { cursos, usuariosData } from "../data"; // Importar los datos locales
+import { usuarios, cursos, sesiones, semanas } from '../data';
 
 const Cursos = () => {
   const [cursosFiltrados, setCursosFiltrados] = useState([]);

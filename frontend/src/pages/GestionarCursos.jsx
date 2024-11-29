@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, FormControl, InputGroup, Pagination, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { cursos } from '../data'; // Importar los cursos desde data.js
+import { usuarios, cursos, sesiones, semanas } from '../data';
 import EditarCursoModal from '../components/EditarCursoModal';
 import VerCursoModal from '../components/VerCursoModal';
 

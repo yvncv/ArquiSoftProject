@@ -1,90 +1,148 @@
-// data.js
-export const usuarios = [
-    {
-      _id: "1",
-      nombre: "Juan Pérez",
-      role: "alumno",
-      carrera: "Informática",
-      ciclo: 1
-    },
-    {
-      _id: "2",
-      nombre: "Ana Gómez",
-      role: "alumno",
-      carrera: "Ingeniería Civil",
-      ciclo: 2
-    },
-    // ... más usuarios
-  ];
-  // data.js
-export const usuariosData = [
-  { id: "1", nombre: "Juan Pérez", codigo: "001", role: "estudiante" },
-  { id: "2", nombre: "Ana Gómez", codigo: "002", role: "profesor" },
-  { id: "3", nombre: "Carlos Sánchez", codigo: "003", role: "estudiante" },
-  // Agrega más usuarios según sea necesario
-];
+import { faker } from '@faker-js/faker';
 
-export const semanasData = [
-  {
-    id: "1",
-    sesiones: [
-      { _id: "s1", tema: "Sesión 1", fecha: "2024-11-01", participantes: [] },
-      { _id: "s2", tema: "Sesión 2", fecha: "2024-11-02", participantes: [] },
-      // Agrega más sesiones según sea necesario
-    ],
-  },
-  {
-    id: "2",
-    sesiones: [
-      { _id: "s3", tema: "Sesión 3", fecha: "2024-11-08", participantes: [] },
-      { _id: "s4", tema: "Sesión 4", fecha: "2024-11-09", participantes: [] },
-    ],
-  },
-  // Agrega más semanas según sea necesario
-];
+// Definimos las carreras posibles para cada facultad
+const carrerasPorFacultad = {
+  ingenieria: [
+    "Informática",
+    "Civil",
+    "Industrial",
+    "Electrónica",
+    "Mecatrónica",
+  ],
+  derecho: ["Derecho"],
+  arquitectura: ["Arquitectura"],
+  cienciasEconomicas: [
+    "Economía",
+    "Administración de Empresas",
+    "Contabilidad",
+  ],
+  psicologia: ["Psicología"],
+  lenguasModernas: ["Traducción e Interpretación", "Idiomas Modernos"],
+  medicina: ["Medicina"],
+  biologiaHumana: ["Biología", "Biomedicina"],
+};
 
-export const asistenciasData = [
-  { tema: "Sesión 1", fecha: "2024-11-01", asistencia: { estado: "presente", hora: "10:00" } },
-  { tema: "Sesión 2", fecha: "2024-11-02", asistencia: { estado: "falta", hora: "N/A" } },
-  // Agrega más asistencias según sea necesario
-];
+// Generar 40 usuarios
+const generateUsers = () => {
+  const users = [];
+  for (let i = 0; i < 40; i++) {
+    const facultades = Object.keys(carrerasPorFacultad);
+    const facultad = faker.helpers.arrayElement(facultades);  // Cambiado a faker.helpers.arrayElement
+    const carrera = faker.helpers.arrayElement(carrerasPorFacultad[facultad]);  // Cambiado a faker.helpers.arrayElement
+    users.push({
+      nombre: faker.name.fullName(),  // Cambiado de findName() a fullName()
+      facultad: facultad,
+      carrera: carrera,
+      ciclo: faker.number.int({ min: 1, max: 10 }).toString(),  // Cambiado a faker.number.int()
+      codigo: faker.string.uuid(),  // Cambiado de faker.datatype.uuid() a faker.string.uuid()
+      correo: faker.internet.email(),
+      password: faker.internet.password(),
+      role: "estudiante", // O "profesor", según el caso
+    });
+  }
+  return users;
+};
 
-export const participacionesData = [
-  { tema: "Sesión 1", fecha: "2024-11-01", participacion: { comentario: "Participó activamente", fecha: "2024-11-01" } },
-  { tema: "Sesión 2", fecha: "2024-11-02", participacion: { comentario: "No participó", fecha: "2024-11-02" } },
-  // Agrega más participaciones según sea necesario
-];
-
-  export const cursos = [
-    {
-      _id: "101",
-      nombre: "Programación 1",
-      codigo: "INF101",
-      grado: "Pregrado",
-      carrera: "Informática",
-      facultad: "Ingeniería",
-      ciclo: 1,
-      semestre: "2024-I",
+// Generar 40 cursos
+const generateCourses = (users) => {
+  const courses = [];
+  for (let i = 0; i < 40; i++) {
+    const facultades = Object.keys(carrerasPorFacultad);
+    const facultad = faker.helpers.arrayElement(facultades);  // Cambiado a faker.helpers.arrayElement
+    const carrera = faker.helpers.arrayElement(carrerasPorFacultad[facultad]);  // Cambiado a faker.helpers.arrayElement
+    const semestre = faker.helpers.arrayElement(["Primero", "Segundo"]);  // Cambiado a faker.helpers.arrayElement
+    courses.push({
+      nombre: `Curso ${faker.commerce.productName()}`,
+      codigo: faker.string.uuid(),  // Cambiado de faker.datatype.uuid() a faker.string.uuid()
+      grado: faker.helpers.arrayElement(["Básico", "Intermedio", "Avanzado"]),  // Cambiado a faker.helpers.arrayElement
+      carrera: carrera,
+      facultad: facultad,
+      ciclo: faker.number.int({ min: 1, max: 10 }),  // Cambiado a faker.number.int()
+      semestre: semestre,
       grupos: [
         {
-          tipoGrupo: "Teoría",
-          horario: [{ dia: "Lunes", hora: "08:00" }],
-          participantes: ["1", "2"],
-          sesiones: []
-        }
-      ]
-    },
-    {
-      _id: "102",
-      nombre: "Matemáticas 1",
-      codigo: "MAT101",
-      grado: "Pregrado",
-      carrera: "Ingeniería Civil",
-      facultad: "Ingeniería",
-      ciclo: 1,
-      semestre: "2024-I",
-      grupos: []
-    },
-    // ... más cursos
-  ];
-  
+          grupo: 1,
+          tipoGrupo: "Teórico",
+          horario: [
+            { dia: "Lunes", hora: "08:00 AM" },
+            { dia: "Miércoles", hora: "08:00 AM" },
+          ],
+          participantes: users.slice(0, 10),
+        },
+        {
+          grupo: 2,
+          tipoGrupo: "Práctico",
+          horario: [
+            { dia: "Martes", hora: "10:00 AM" },
+            { dia: "Jueves", hora: "10:00 AM" },
+          ],
+          participantes: users.slice(10, 20),
+        },
+      ],
+    });
+  }
+  return courses;
+};
+
+// Generar 40 sesiones
+const generateSessions = (courses) => {
+  const sessions = [];
+  courses.forEach((course) => {
+    course.grupos.forEach((grupo) => {
+      for (let i = 0; i < 10; i++) {
+        const fecha = faker.date.future();
+        sessions.push({
+          tema: `Tema de sesión ${i + 1}`,
+          fecha: fecha,
+          participantes: grupo.participantes.map((usuario) => ({
+            participante: usuario.codigo,
+            asistencia: {
+              estado: faker.helpers.arrayElement(["Presente", "Ausente"]),  // Cambiado a faker.helpers.arrayElement
+              hora: faker.date.recent(),
+            },
+            participacion: {
+              comentario: faker.lorem.sentence(),
+              fecha: faker.date.recent(),
+            },
+          })),
+        });
+      }
+    });
+  });
+  return sessions;
+};
+
+// Generar 40 semanas
+const generateWeeks = (sessions) => {
+  const weeks = [];
+  for (let i = 0; i < 40; i++) {
+    weeks.push({
+      sesiones: sessions.slice(i * 10, (i + 1) * 10),
+      fecha: {
+        inicio: faker.date.past(),
+        fin: faker.date.future(),
+      },
+    });
+  }
+  return weeks;
+};
+
+// Generar los datos completos
+const generateData = () => {
+  const usuarios = generateUsers();
+  const courses = generateCourses(usuarios);
+  const sessions = generateSessions(courses);
+  const weeks = generateWeeks(sessions);
+
+  return {
+    usuarios,
+    cursos: courses,
+    sesiones: sessions,
+    semanas: weeks,
+  };
+};
+
+// Exportar los datos generados de manera individual
+export const { usuarios, cursos, sesiones, semanas } = generateData();
+
+

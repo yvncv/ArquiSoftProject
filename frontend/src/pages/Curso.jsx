@@ -4,7 +4,7 @@ import { Card } from "react-bootstrap";
 import { Pie } from "react-chartjs-2";
 import { Table, FormControl, InputGroup, Accordion, Tab, Tabs } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
-import { usuariosData, semanasData, asistenciasData, participacionesData, cursos } from "../data"; // Importar datos locales
+import { usuarios, cursos, sesiones, semanas } from '../data';
 
 import {
   Chart as ChartJS,
@@ -52,13 +52,13 @@ const Curso = () => {
 
   useEffect(() => {
     // Encontrar el curso con el id proporcionado
-    const selectedCurso = cursos.find((curso) => curso._id === cursoId);
+    const selectedCurso = cursos.find((curso) => curso.codigo === cursoId);
     setCurso(selectedCurso);
 
     if (selectedCurso) {
       const participantesIds = selectedCurso.grupos.flatMap((grupo) => grupo.participantes);
-      const participantesData = usuariosData.filter((usuario) =>
-        participantesIds.includes(usuario.id)
+      const participantesData = usuarios.filter((usuario) =>
+        participantesIds.includes(usuario.codigo)
       );
       setParticipantes(participantesData);
       setFilteredParticipantes(participantesData);
@@ -77,11 +77,11 @@ const Curso = () => {
 
   useEffect(() => {
     if (curso && usuario) {
-      const semanasConSesiones = semanasData.filter((semana) =>
-        curso.grupos.some((grupo) => grupo.sesiones.includes(semana.id))
+      const semanasConSesiones = semanas.filter((semana) =>
+        curso.grupos.some((grupo) => grupo.sesiones.some((sesion) => sesion._id === semana.id))
       );
-      setAsistencias(asistenciasData); // Simula la carga de asistencias desde datos locales
-      setParticipaciones(participacionesData); // Simula la carga de participaciones desde datos locales
+      setAsistencias(asistencias); // Simula la carga de asistencias desde datos locales
+      setParticipaciones(participaciones); // Simula la carga de participaciones desde datos locales
 
       let totalSesiones = 0;
       let sesionesPresentes = 0;
@@ -94,8 +94,8 @@ const Curso = () => {
         semana.sesiones.forEach((sesion) => {
           totalSesiones++;
 
-          const asistencia = asistenciasData.find((a) => a.tema === sesion.tema);
-          const participacion = participacionesData.find((p) => p.tema === sesion.tema);
+          const asistencia = asistencias.find((a) => a.tema === sesion.tema);
+          const participacion = participaciones.find((p) => p.tema === sesion.tema);
 
           if (asistencia?.asistencia?.estado === "presente") {
             sesionesPresentes++;
@@ -198,7 +198,6 @@ const Curso = () => {
     return <div>Curso no encontrado</div>;
   }
 
-
   return (
     <>
       <div className="container-curso-seleccionado-total">
@@ -216,8 +215,8 @@ const Curso = () => {
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>General</Accordion.Header>
                 </Accordion.Item>
-                {semanasData.length > 0 ? (
-                  semanasData.map((semana, index) => (
+                {semanas.length > 0 ? (
+                  semanas.map((semana, index) => (
                     <Accordion.Item key={index} eventKey={`${index}`}>
                       <Accordion.Header>Semana {index + 1}</Accordion.Header>
                       <Accordion.Body>
@@ -227,16 +226,15 @@ const Curso = () => {
                               <li key={idx}>
                                 {usuario.role === "profesor" ? (
                                   <a style={{color: 'green', fontWeight: '700'}}
-                                  href={`#/asistencia/${sesion._id}`} // o usa react-router-dom si es necesario
+                                  href={`#/asistencia/${sesion._id}`} 
                                   onClick={(e) => {
-                                    e.preventDefault(); // prevenir el comportamiento predeterminado del enlace
+                                    e.preventDefault();
                                     handleSessionClick(sesion._id);
                                   }}
                                 >
                                   {sesion.tema}
                                 </a>) : (<p>{sesion.tema}</p>)
                                 }
-                                
                               </li>
                             ))
                           ) : (
@@ -254,122 +252,26 @@ const Curso = () => {
           </Tab>
 
           {usuario.role === 'profesor' || usuario.role === 'admin' ? ('') : (
-            <Tab eventKey="estadisticas" title="Estadísticas" className="">
-              <Card style={{ width: "", margin: "" }}>
+            <Tab eventKey="estadisticas" title="Estadísticas">
+              <Card>
                 <Card.Header>
                   <Card.Title>Asistencias en sesiones</Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Pie style={{ height: "" }} data={data} options={{ maintainAspectRatio: false }} />
+                  <Pie data={data} options={{ maintainAspectRatio: false }} />
                 </Card.Body>
               </Card>
-              <Card style={{ width: "", margin: "20px" }}>
+
+              <Card>
                 <Card.Header>
-                  <Card.Title>Participaciones en sesiones</Card.Title>
+                  <Card.Title>Participación en el curso</Card.Title>
                 </Card.Header>
                 <Card.Body>
-                  <Pie
-                    data={dataParticipacion}
-                    options={{ maintainAspectRatio: false }}
-                  />
+                  <Pie data={dataParticipacion} options={{ maintainAspectRatio: false }} />
                 </Card.Body>
               </Card>
             </Tab>
           )}
-
-          <Tab
-            eventKey="participantes"
-            title="Participantes"
-            style={{ height: "fit-content" }}
-          >
-            <div className="container-curso-seleccionado">
-              <InputGroup className="mb-3">
-                <FormControl
-                  placeholder="Buscar Participante"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </InputGroup>
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Rol</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredParticipantes.map((participante) => (
-                    <tr key={participante.id}>
-                      <td>{participante.codigo}</td>
-                      <td>{participante.nombre}</td>
-                      <td>{participante.role}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </Tab>
-          <Tab
-            eventKey="asistencias"
-            title="Asistencia"
-            style={{ height: "fit-content" }}
-          >
-            <div className="container-curso-seleccionado">
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Tema</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Hora</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {asistencias.map((asistencia, index) => (
-                    <tr key={index}>
-                      <td>{asistencia.tema}</td>
-                      <td>{formatDate(asistencia.fecha)}</td>
-                      <td>{asistencia.asistencia.estado}</td>
-                      <td>{formatTime(asistencia.asistencia.hora)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-              <div className="container-chart">
-                <Pie data={data} />
-              </div>
-            </div>
-          </Tab>
-          <Tab
-            eventKey="participaciones"
-            title="Participación"
-            style={{ height: "fit-content" }}
-          >
-            <div className="container-curso-seleccionado">
-              <Table striped bordered hover>
-                <thead>
-                  <tr>
-                    <th>Tema</th>
-                    <th>Fecha</th>
-                    <th>Comentario</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {participaciones.map((participacion, index) => (
-                    <tr key={index}>
-                      <td>{participacion.tema}</td>
-                      <td>{formatDate(participacion.fecha)}</td>
-                      <td>{participacion.participacion.comentario}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-              <div className="container-chart">
-                <Pie data={dataParticipacion} />
-              </div>
-            </div>
-          </Tab>
         </Tabs>
       </div>
     </>

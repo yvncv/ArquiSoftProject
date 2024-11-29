@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
-import { usuarios } from '../data.js'; // Importando los datos simulados
+import { usuarios, cursos, sesiones, semanas } from '../data';
 
 const carrerasPorFacultad = {
   ingenieria: [

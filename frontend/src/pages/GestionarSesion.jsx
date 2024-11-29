@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { usuariosData, semanasData } from '../data'; // Importar los datos desde data.js
+import { usuarios, cursos, sesiones, semanas } from '../data';
 
 function GestionarSesion() {
   const [sesion, setSesion] = useState(null);
@@ -13,8 +13,8 @@ function GestionarSesion() {
   useEffect(() => {
     const fetchSesion = (sesionId) => {
       try {
-        // Buscar la sesión correspondiente en semanasData
-        const semana = semanasData.find((semana) =>
+        // Buscar la sesión correspondiente en semanas
+        const semana = semanas.find((semana) =>
           semana.sesiones.some((sesion) => sesion._id === sesionId)
         );
 
@@ -23,7 +23,7 @@ function GestionarSesion() {
 
           // Aquí se actualiza los participantes con la información de los usuarios
           const participantesActualizados = sesionData.participantes.map((participanteId) => {
-            const participanteData = usuariosData.find((usuario) => usuario.id === participanteId);
+            const participanteData = usuarios.find((usuario) => usuario.id === participanteId);
             return {
               _id: participanteData.id,
               nombre: participanteData.nombre,

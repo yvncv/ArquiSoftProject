@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Col } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
-import { usuariosData } from '../data'; // Importamos los datos simulados
+import { usuarios, cursos, sesiones, semanas } from '../data';
 
 const Login = ({ setLoggedInUser }) => {
   const [codigo, setCodigo] = useState('');
@@ -22,8 +22,8 @@ const Login = ({ setLoggedInUser }) => {
     event.preventDefault();
     setLoading(true); // Activar el estado de carga
 
-    // Simulamos la verificación de usuario con los datos de usuariosData
-    const usuario = usuariosData.find(u => u.codigo === codigo && u.password === password); 
+    // Simulamos la verificación de usuario con los datos de usuarios
+    const usuario = usuarios.find(u => u.codigo === codigo && u.password === password); 
 
     if (usuario) {
       setLoggedInUser(usuario);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { usuariosData } from "../data"; // Importar los usuarios desde data.js
+import { usuarios, cursos, sesiones, semanas } from '../data';
 
 const Dashboard = () => {
   const [usuario, setUsuario] = useState(null); // Estado local para el usuario
@@ -11,7 +11,7 @@ const Dashboard = () => {
         if (token) {
           // Buscar el usuario basado en el token, aquí asumimos que el token contiene el 'id' del usuario
           const decoded = JSON.parse(atob(token.split('.')[1])); // Decodificar el payload del JWT (sin usar jwt-decode)
-          const usuarioEncontrado = usuariosData.find(user => user.id === decoded.usuario.id);
+          const usuarioEncontrado = usuarios.find(user => user.id === decoded.usuario.id);
           setUsuario(usuarioEncontrado);
         }
       } catch (error) {

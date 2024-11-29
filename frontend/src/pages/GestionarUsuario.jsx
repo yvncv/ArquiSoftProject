@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 import { Button, FormControl, InputGroup, Pagination } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import ModalEliminar from '../components/ModalEliminar';
-import { usuariosData } from '../data'; // Importamos los datos desde data.js
+import { usuarios, cursos, sesiones, semanas } from '../data';
 
 function GestionarUsuarios() {
     const [lista, setLista] = useState([]);
@@ -17,7 +17,7 @@ function GestionarUsuarios() {
 
     useEffect(() => {
         // Cargar usuarios desde los datos simulados
-        setLista(usuariosData);
+        setLista(usuarios);
     }, []);
 
     useEffect(() => {
